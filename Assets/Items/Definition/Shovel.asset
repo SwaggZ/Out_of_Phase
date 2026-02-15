@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ce0b7649671b849a6a417c03c9ecef, type: 3}
+  m_Name: Shovel
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Items.ItemDefinition
+  itemId: shovel
+  itemName: Shovel
+  description: Used to dig up buried items.
+  icon: {fileID: 0}
+  worldPrefab: {fileID: 2335828800214212570, guid: 61c53b69bd2f8b248842a293423b2411, type: 3}
+  heldPrefab: {fileID: 2335828800214212570, guid: 61c53b69bd2f8b248842a293423b2411, type: 3}
+  isStackable: 0
+  maxStackSize: 1
+  hasDurability: 1
+  maxDurability: 100
+  toolActions:
+  - {fileID: 11400000, guid: 91ac2c0e0edd6514ab866d7b24665bac, type: 2}
+  category: 1
