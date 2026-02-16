@@ -34,6 +34,12 @@ namespace OutOfPhase.Player
         [Tooltip("Gravity multiplier (Earth = 1)")]
         [SerializeField] private float gravityMultiplier = 2f;
         
+        [Tooltip("Extra gravity multiplier when falling (makes falls feel snappier)")]
+        [SerializeField] private float fallMultiplier = 2.5f;
+        
+        [Tooltip("Maximum fall speed")]
+        [SerializeField] private float terminalVelocity = 50f;
+        
         [Tooltip("Time after leaving ground where jump is still allowed")]
         [SerializeField] private float coyoteTime = 0.15f;
         
@@ -67,7 +73,9 @@ namespace OutOfPhase.Player
         private float _verticalVelocity;
         private bool _isGrounded;
         private bool _wasGroundedLastFrame;
+        private bool _hasJumped;
         private float _lastGroundedTime;
+        private float _jumpTime;
         private float _lastJumpInputTime;
         private bool _isSprinting;
         private Vector2 _moveInput;
@@ -90,6 +98,13 @@ namespace OutOfPhase.Player
             
             // Set step offset
             _controller.stepOffset = stepHeight;
+            
+            // Ensure player is on its own layer so ground check doesn't self-detect
+            // If groundLayers includes everything, exclude the player's layer
+            if (groundLayers == ~0)
+            {
+                groundLayers = ~(1 << gameObject.layer);
+            }
         }
 
         private void OnEnable()
@@ -149,6 +164,13 @@ namespace OutOfPhase.Player
         {
             _wasGroundedLastFrame = _isGrounded;
             
+            // After jumping, ignore ground checks briefly so we actually leave the ground
+            if (_hasJumped && Time.time - _jumpTime < 0.15f)
+            {
+                _isGrounded = false;
+                return;
+            }
+            
             // Sphere cast for ground check
             Vector3 spherePosition = transform.position + Vector3.down * groundCheckOffset;
             _isGrounded = Physics.CheckSphere(spherePosition, groundCheckRadius, groundLayers, QueryTriggerInteraction.Ignore);
@@ -166,6 +188,7 @@ namespace OutOfPhase.Player
             if (_isGrounded)
             {
                 _lastGroundedTime = Time.time;
+                _hasJumped = false;
             }
         }
 
@@ -220,18 +243,30 @@ namespace OutOfPhase.Player
 
         private void HandleJump()
         {
-            // Check for coyote time eligibility
-            bool canCoyoteJump = Time.time - _lastGroundedTime <= coyoteTime;
-            
             // Check for buffered jump
             bool hasBufferedJump = Time.time - _lastJumpInputTime <= jumpBufferTime;
             
-            // Execute jump if conditions met
-            if (hasBufferedJump && (canCoyoteJump || _isGrounded) && _verticalVelocity <= 0f)
+            // Only allow jumping if truly grounded right now (not via coyote after a jump)
+            bool canJump = _isGrounded && !_hasJumped;
+            
+            // Also allow coyote jump if we walked off an edge (not from jumping)
+            if (!canJump && !_hasJumped)
+            {
+                bool canCoyoteJump = Time.time - _lastGroundedTime <= coyoteTime;
+                canJump = canCoyoteJump;
+            }
+            
+            if (hasBufferedJump && canJump)
             {
                 _verticalVelocity = _jumpVelocity;
                 _lastJumpInputTime = -1f; // Clear buffer
-                _lastGroundedTime = -1f; // Prevent double jump
+                _lastGroundedTime = -1f; // Prevent coyote after jump
+                _hasJumped = true;
+                _jumpTime = Time.time;
+
+                // Trigger jump sound on FootstepController if present
+                var footsteps = GetComponent<FootstepController>();
+                if (footsteps != null) footsteps.PlayJump();
             }
         }
 
@@ -244,7 +279,20 @@ namespace OutOfPhase.Player
             }
             else
             {
-                _verticalVelocity += _gravity * Time.deltaTime;
+                // Apply stronger gravity when falling for snappy, realistic feel
+                float gravityThisFrame = _gravity;
+                if (_verticalVelocity < 0f)
+                {
+                    gravityThisFrame *= fallMultiplier;
+                }
+                
+                _verticalVelocity += gravityThisFrame * Time.deltaTime;
+                
+                // Clamp to terminal velocity
+                if (_verticalVelocity < -terminalVelocity)
+                {
+                    _verticalVelocity = -terminalVelocity;
+                }
             }
         }
 

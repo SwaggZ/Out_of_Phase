@@ -15,7 +15,12 @@ MonoBehaviour:
   actionName: ShovelAction
   durabilityCost: 1
   cooldown: 0.5
-  useSound: {fileID: 0}
+  useSounds: []
+  swingSounds:
+  - {fileID: 8300000, guid: 461e88b279fe6ad4cbd3331599f21384, type: 3}
+  - {fileID: 8300000, guid: 2a60af36b42381b4eb282d0912ad8e50, type: 3}
+  - {fileID: 8300000, guid: 00985e48360a5b24fbe4f3416503bf29, type: 3}
+  equipSounds: []
   digPower: 1
   diggableLayers:
     serializedVersion: 2

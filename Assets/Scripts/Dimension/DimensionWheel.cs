@@ -57,6 +57,9 @@ namespace OutOfPhase.Dimension
         private int _previousSelection = -1;
         private float _previousTimeScale;
         private bool _cursorWasLocked;
+
+        // Visible (non-hidden) dimension indices, rebuilt when visibility changes
+        private int[] _visibleDimensions;
         
         // Segment UI elements
         private RectTransform[] _segmentTransforms;
@@ -74,7 +77,10 @@ namespace OutOfPhase.Dimension
             _playerLook = GetComponent<PlayerLook>();
             if (_playerLook == null)
                 _playerLook = GetComponentInParent<PlayerLook>();
-            
+        }
+
+        private void Start()
+        {
             if (autoCreateUI && canvas == null)
             {
                 CreateWheelUI();
@@ -88,15 +94,27 @@ namespace OutOfPhase.Dimension
         private void OnEnable()
         {
             _inputActions.Player.Enable();
-            _inputActions.Player.DimensionWheel.started += _ => OpenWheel();
-            _inputActions.Player.DimensionWheel.canceled += _ => CloseWheel();
+            _inputActions.Player.DimensionWheel.started += OnWheelStarted;
+            _inputActions.Player.DimensionWheel.canceled += OnWheelCanceled;
+
+            if (DimensionManager.Instance != null)
+            {
+                DimensionManager.Instance.OnDimensionLocksChanged += OnLocksChanged;
+                DimensionManager.Instance.OnDimensionVisibilityChanged += OnVisibilityChanged;
+            }
         }
 
         private void OnDisable()
         {
-            _inputActions.Player.DimensionWheel.started -= _ => OpenWheel();
-            _inputActions.Player.DimensionWheel.canceled -= _ => CloseWheel();
+            _inputActions.Player.DimensionWheel.started -= OnWheelStarted;
+            _inputActions.Player.DimensionWheel.canceled -= OnWheelCanceled;
             _inputActions.Player.Disable();
+
+            if (DimensionManager.Instance != null)
+            {
+                DimensionManager.Instance.OnDimensionLocksChanged -= OnLocksChanged;
+                DimensionManager.Instance.OnDimensionVisibilityChanged -= OnVisibilityChanged;
+            }
             
             // Ensure we restore state if disabled while open
             if (_isOpen)
@@ -104,6 +122,9 @@ namespace OutOfPhase.Dimension
                 RestoreGameState();
             }
         }
+
+        private void OnWheelStarted(InputAction.CallbackContext ctx) => OpenWheel();
+        private void OnWheelCanceled(InputAction.CallbackContext ctx) => CloseWheel();
 
         private void Update()
         {
@@ -138,6 +159,8 @@ namespace OutOfPhase.Dimension
             // Show UI
             if (wheelContainer != null)
             {
+                RebuildVisibleDimensions();
+                RebuildWheelLayout();
                 wheelContainer.gameObject.SetActive(true);
                 UpdateSegmentVisuals();
             }
@@ -153,10 +176,14 @@ namespace OutOfPhase.Dimension
             
             _isOpen = false;
             
-            // Apply selection
+            // Apply selection (hoveredSegment is an actual dimension index)
             if (_hoveredSegment >= 0 && _hoveredSegment != _previousSelection)
             {
-                DimensionManager.Instance.SwitchToDimension(_hoveredSegment);
+                if (!DimensionManager.Instance.IsDimensionLocked(_hoveredSegment)
+                    && !DimensionManager.Instance.IsDimensionHidden(_hoveredSegment))
+                {
+                    DimensionManager.Instance.SwitchToDimension(_hoveredSegment);
+                }
             }
             
             RestoreGameState();
@@ -211,7 +238,8 @@ namespace OutOfPhase.Dimension
             // Rotate so 0 is at the top
             angle = (angle + 90f) % 360f;
             
-            int segmentCount = DimensionManager.Instance.DimensionCount;
+            int segmentCount = _visibleDimensions != null ? _visibleDimensions.Length : 0;
+            if (segmentCount == 0) return;
             float segmentAngle = 360f / segmentCount;
             
             // Offset by half segment so segments are centered
@@ -219,10 +247,13 @@ namespace OutOfPhase.Dimension
             
             int newHovered = Mathf.FloorToInt(angle / segmentAngle);
             newHovered = Mathf.Clamp(newHovered, 0, segmentCount - 1);
+
+            // Map visual segment index back to actual dimension index
+            int actualDimension = _visibleDimensions[newHovered];
             
-            if (newHovered != _hoveredSegment)
+            if (actualDimension != _hoveredSegment)
             {
-                _hoveredSegment = newHovered;
+                _hoveredSegment = actualDimension;
                 UpdateSegmentVisuals();
                 UpdateDimensionNameDisplay();
             }
@@ -230,34 +261,43 @@ namespace OutOfPhase.Dimension
 
         private void UpdateSegmentVisuals()
         {
-            if (_segmentImages == null || DimensionManager.Instance == null) return;
+            if (_segmentImages == null || DimensionManager.Instance == null || _visibleDimensions == null) return;
             
             int currentDim = DimensionManager.Instance.CurrentDimension;
             
-            for (int i = 0; i < _segmentImages.Length; i++)
+            for (int vi = 0; vi < _segmentImages.Length; vi++)
             {
-                if (_segmentImages[i] == null) continue;
+                if (_segmentImages[vi] == null) continue;
+
+                int dimIndex = _visibleDimensions[vi];
+                bool isLocked = DimensionManager.Instance.IsDimensionLocked(dimIndex);
+                Color dimColor = DimensionManager.Instance.GetDimensionColor(dimIndex);
                 
-                Color dimColor = DimensionManager.Instance.GetDimensionColor(i);
-                
-                if (i == _hoveredSegment)
+                if (isLocked)
                 {
-                    // Highlighted
-                    _segmentImages[i].color = dimColor;
-                    _segmentTransforms[i].localScale = Vector3.one * 1.2f;
+                    _segmentImages[vi].color = lockedColor;
+                    _segmentTransforms[vi].localScale = Vector3.one * 0.85f;
+                    if (_segmentLabels != null && vi < _segmentLabels.Length && _segmentLabels[vi] != null)
+                        _segmentLabels[vi].color = Color.black;
                 }
-                else if (i == currentDim)
+                else if (dimIndex == _hoveredSegment)
                 {
-                    // Current dimension
-                    _segmentImages[i].color = Color.Lerp(dimColor, selectedColor, 0.3f);
-                    _segmentTransforms[i].localScale = Vector3.one;
+                    _segmentImages[vi].color = dimColor;
+                    _segmentTransforms[vi].localScale = Vector3.one * 1.2f;
+                }
+                else if (dimIndex == currentDim)
+                {
+                    _segmentImages[vi].color = Color.Lerp(dimColor, selectedColor, 0.3f);
+                    _segmentTransforms[vi].localScale = Vector3.one;
                 }
                 else
                 {
-                    // Other dimensions
-                    _segmentImages[i].color = Color.Lerp(dimColor, unselectedColor, 0.5f);
-                    _segmentTransforms[i].localScale = Vector3.one * 0.9f;
+                    _segmentImages[vi].color = Color.Lerp(dimColor, unselectedColor, 0.5f);
+                    _segmentTransforms[vi].localScale = Vector3.one * 0.9f;
                 }
+
+                if (!isLocked && _segmentLabels != null && vi < _segmentLabels.Length && _segmentLabels[vi] != null)
+                    _segmentLabels[vi].color = Color.black;
             }
         }
 
@@ -267,8 +307,107 @@ namespace OutOfPhase.Dimension
             
             if (_hoveredSegment >= 0)
             {
-                dimensionNameText.text = DimensionManager.Instance.GetDimensionName(_hoveredSegment);
-                dimensionNameText.color = DimensionManager.Instance.GetDimensionColor(_hoveredSegment);
+                bool isLocked = DimensionManager.Instance.IsDimensionLocked(_hoveredSegment);
+                string name = DimensionManager.Instance.GetDimensionName(_hoveredSegment);
+                dimensionNameText.text = isLocked ? $"{name} (Locked)" : name;
+                dimensionNameText.color = isLocked ? lockedColor : DimensionManager.Instance.GetDimensionColor(_hoveredSegment);
+            }
+        }
+
+        private void OnLocksChanged()
+        {
+            if (!_isOpen) return;
+            UpdateSegmentVisuals();
+            UpdateDimensionNameDisplay();
+        }
+
+        private void OnVisibilityChanged()
+        {
+            if (!_isOpen) return;
+            RebuildVisibleDimensions();
+            RebuildWheelLayout();
+            UpdateSegmentVisuals();
+            UpdateDimensionNameDisplay();
+        }
+
+        /// <summary>
+        /// Rebuilds the list of non-hidden dimension indices.
+        /// </summary>
+        private void RebuildVisibleDimensions()
+        {
+            if (DimensionManager.Instance == null)
+            {
+                _visibleDimensions = new int[] { 0, 1, 2, 3, 4 };
+                return;
+            }
+
+            var list = new System.Collections.Generic.List<int>();
+            for (int i = 0; i < DimensionManager.Instance.DimensionCount; i++)
+            {
+                if (!DimensionManager.Instance.IsDimensionHidden(i))
+                    list.Add(i);
+            }
+            _visibleDimensions = list.ToArray();
+        }
+
+        /// <summary>
+        /// Destroys existing segments and recreates them for visible dimensions only.
+        /// </summary>
+        private void RebuildWheelLayout()
+        {
+            // Destroy old segments
+            if (_segmentTransforms != null)
+            {
+                foreach (var rt in _segmentTransforms)
+                {
+                    if (rt != null) Destroy(rt.gameObject);
+                }
+            }
+
+            int count = _visibleDimensions != null ? _visibleDimensions.Length : 0;
+            _segmentTransforms = new RectTransform[count];
+            _segmentImages = new Image[count];
+            _segmentLabels = new TextMeshProUGUI[count];
+
+            float angleStep = count > 0 ? 360f / count : 360f;
+
+            for (int vi = 0; vi < count; vi++)
+            {
+                int dimIndex = _visibleDimensions[vi];
+
+                float angle = -90f + (vi * angleStep);
+                float rad = angle * Mathf.Deg2Rad;
+                Vector2 pos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * wheelRadius;
+
+                GameObject segObj = new GameObject($"Segment_{dimIndex}");
+                segObj.transform.SetParent(wheelContainer);
+
+                RectTransform segRect = segObj.AddComponent<RectTransform>();
+                segRect.anchorMin = new Vector2(0.5f, 0.5f);
+                segRect.anchorMax = new Vector2(0.5f, 0.5f);
+                segRect.anchoredPosition = pos;
+                segRect.sizeDelta = new Vector2(segmentSize, segmentSize);
+                _segmentTransforms[vi] = segRect;
+
+                Image img = segObj.AddComponent<Image>();
+                img.color = Color.white;
+                _segmentImages[vi] = img;
+
+                GameObject labelObj = new GameObject("Label");
+                labelObj.transform.SetParent(segObj.transform);
+                RectTransform labelRect = labelObj.AddComponent<RectTransform>();
+                labelRect.anchorMin = Vector2.zero;
+                labelRect.anchorMax = Vector2.one;
+                labelRect.offsetMin = Vector2.zero;
+                labelRect.offsetMax = Vector2.zero;
+
+                TextMeshProUGUI label = labelObj.AddComponent<TextMeshProUGUI>();
+                label.text = (dimIndex + 1).ToString();
+                label.alignment = TextAlignmentOptions.Center;
+                label.fontSize = 28;
+                label.fontStyle = FontStyles.Bold;
+                label.color = Color.black;
+                _segmentLabels[vi] = label;
             }
         }
 
@@ -282,7 +421,11 @@ namespace OutOfPhase.Dimension
             canvas = canvasObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
-            canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            var scaler = canvasObj.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
             canvasObj.AddComponent<GraphicRaycaster>();
             
             // Create wheel container
@@ -324,65 +467,9 @@ namespace OutOfPhase.Dimension
 
         private void CreateSegments()
         {
-            if (DimensionManager.Instance == null)
-            {
-                // Create with default 5 dimensions
-                CreateSegmentsForCount(5);
-            }
-            else
-            {
-                CreateSegmentsForCount(DimensionManager.Instance.DimensionCount);
-            }
-        }
-
-        private void CreateSegmentsForCount(int count)
-        {
-            _segmentTransforms = new RectTransform[count];
-            _segmentImages = new Image[count];
-            _segmentLabels = new TextMeshProUGUI[count];
-            
-            float angleStep = 360f / count;
-            
-            for (int i = 0; i < count; i++)
-            {
-                // Calculate position (start from top, go clockwise)
-                float angle = -90f + (i * angleStep);
-                float rad = angle * Mathf.Deg2Rad;
-                Vector2 pos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * wheelRadius;
-                
-                // Create segment
-                GameObject segObj = new GameObject($"Segment_{i}");
-                segObj.transform.SetParent(wheelContainer);
-                
-                RectTransform segRect = segObj.AddComponent<RectTransform>();
-                segRect.anchorMin = new Vector2(0.5f, 0.5f);
-                segRect.anchorMax = new Vector2(0.5f, 0.5f);
-                segRect.anchoredPosition = pos;
-                segRect.sizeDelta = new Vector2(segmentSize, segmentSize);
-                _segmentTransforms[i] = segRect;
-                
-                // Add image (circle)
-                Image img = segObj.AddComponent<Image>();
-                img.color = Color.white;
-                _segmentImages[i] = img;
-                
-                // Add number label
-                GameObject labelObj = new GameObject("Label");
-                labelObj.transform.SetParent(segObj.transform);
-                RectTransform labelRect = labelObj.AddComponent<RectTransform>();
-                labelRect.anchorMin = Vector2.zero;
-                labelRect.anchorMax = Vector2.one;
-                labelRect.offsetMin = Vector2.zero;
-                labelRect.offsetMax = Vector2.zero;
-                
-                TextMeshProUGUI label = labelObj.AddComponent<TextMeshProUGUI>();
-                label.text = (i + 1).ToString();
-                label.alignment = TextAlignmentOptions.Center;
-                label.fontSize = 28;
-                label.fontStyle = FontStyles.Bold;
-                label.color = Color.black;
-                _segmentLabels[i] = label;
-            }
+            // Use visibility-aware rebuild so hidden dimensions are excluded from the start
+            RebuildVisibleDimensions();
+            RebuildWheelLayout();
         }
 
         #endregion

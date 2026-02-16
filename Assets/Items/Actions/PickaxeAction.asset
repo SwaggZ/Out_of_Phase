@@ -15,7 +15,12 @@ MonoBehaviour:
   actionName: PickaxeAction
   durabilityCost: 1
   cooldown: 0.5
-  useSound: {fileID: 0}
+  useSounds: []
+  swingSounds:
+  - {fileID: 8300000, guid: 3303003e14284b9409cbf3b7cb517e1a, type: 3}
+  - {fileID: 8300000, guid: ec6c9bb71032e6942911de3a5e7ef563, type: 3}
+  - {fileID: 8300000, guid: da093913386a7b046a2a41dd5a058fec, type: 3}
+  equipSounds: []
   damage: 25
   mineableLayers:
     serializedVersion: 2

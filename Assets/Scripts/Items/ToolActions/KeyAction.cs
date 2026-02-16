@@ -40,7 +40,7 @@ namespace OutOfPhase.Items.ToolActions
                     if (success)
                     {
                         // Play unlock sound
-                        var sound = unlockSound != null ? unlockSound : useSound;
+                        var sound = unlockSound != null ? unlockSound : GetRandomClip(useSounds);
                         if (sound != null)
                         {
                             AudioSource.PlayClipAtPoint(sound, hit.point);

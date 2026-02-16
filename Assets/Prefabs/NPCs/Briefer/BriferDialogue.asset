@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: BriferDialogue
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: Scene Briefer
+  nodes:
+  - speakerNameOverride: ???
+    text: '[Rain falls. Neon reflections flicker across wet pavement.
+
+      Your
+      vehicle door shuts with a heavy mechanical click.]'
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: 'DISPATCH (COMMS):'
+    text: "Detective, you\u2019re on scene."
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: 'DISPATCH (COMMS):'
+    text: "Location: Sector 9 \u2013 Commercial District.\r\nTime of incident: 02:17
+      local.\r\nOne confirmed casualty."
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: 'DISPATCH (COMMS):'
+    text: Forensics flagged something unusual.
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: 'DISPATCH (COMMS):'
+    text: "We\u2019ve restricted the area and locked down all traffic feeds. Nothing
+      enters. Nothing leaves."
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: Chief wants this handled quietly.
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: ...
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: "There\u2019s one more thing."
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: 'Initial scans show a localized distortion in the airspace near the victim.
+
+      Not
+      thermal.
+
+      Not electromagnetic.
+
+      Not radiation.'
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: "It\u2019s\u2026 spatial."
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: "We don\u2019t know what caused it."
+    choices: []
+    nextNodeIndex: 11
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: '- Enter the scene.
+
+      - Inspect the anomaly.
+
+      - Secure all
+      irregular evidence.
+
+      - Report any technology outside registered city
+      signatures.'
+    choices: []
+    nextNodeIndex: 12
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: And Detective...
+    choices: []
+    nextNodeIndex: 13
+    itemRewards: []
+  - speakerNameOverride: Brifer
+    text: "This one doesn\u2019t fit a pattern.\nBe careful."
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []

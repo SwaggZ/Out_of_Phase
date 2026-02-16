@@ -130,6 +130,14 @@ namespace OutOfPhase.Player
             // Initialize FOV
             _targetFOV = fieldOfView;
             ApplyFOV(fieldOfView);
+
+            // Apply saved settings if SettingsManager is available
+            if (UI.SettingsManager.Instance != null)
+            {
+                var s = UI.SettingsManager.Instance.Current;
+                SetSensitivity(s.mouseSensitivity);
+                SetFOV(s.fov);
+            }
         }
 
         private void Update()

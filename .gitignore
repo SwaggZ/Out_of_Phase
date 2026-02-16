@@ -67,3 +67,6 @@ Thumbs.db
 
 # JetBrains Rider
 .idea/
+
+# Audio files
+*.mp3

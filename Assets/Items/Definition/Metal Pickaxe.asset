@@ -15,9 +15,9 @@ MonoBehaviour:
   itemId: metalpickaxe
   itemName: Metal Pickaxe
   description: Used to mine rocks and break barriers.
-  icon: {fileID: 0}
-  worldPrefab: {fileID: 8430826242872343822, guid: 7e54203ab234dfd44b6720b9cca8644c, type: 3}
-  heldPrefab: {fileID: 8430826242872343822, guid: 7e54203ab234dfd44b6720b9cca8644c, type: 3}
+  icon: {fileID: 21300000, guid: 27dace93b79fe0444947986a31abeeb3, type: 3}
+  worldPrefab: {fileID: 8430826242872343822, guid: 516853889b6ecb7499856452cffa87d3, type: 3}
+  heldPrefab: {fileID: 8430826242872343822, guid: 516853889b6ecb7499856452cffa87d3, type: 3}
   isStackable: 0
   maxStackSize: 1
   hasDurability: 1

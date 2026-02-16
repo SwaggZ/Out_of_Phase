@@ -8,12 +8,13 @@ namespace OutOfPhase.Dimension
     /// <summary>
     /// Futuristic glitchy transition effect when switching dimensions.
     /// Creates scanlines, digital noise, chromatic aberration simulation, and glitch displacement.
+    /// Respects epilepsy mode: skips flashing/glitch, does a gentle color fade instead.
     /// </summary>
     public class DimensionTransitionEffect : MonoBehaviour
     {
         [Header("Effect Settings")]
         [Tooltip("Duration of the transition effect")]
-        [SerializeField] private float transitionDuration = 0.5f;
+        [SerializeField] private float transitionDuration = 2.5f;
         
         [Tooltip("Number of glitch frames during transition")]
         [SerializeField] private int glitchFrameCount = 8;
@@ -41,7 +42,6 @@ namespace OutOfPhase.Dimension
         private Texture2D _glitchTexture;
         
         // State
-        private bool _isTransitioning;
         private Coroutine _transitionCoroutine;
 
         private void Awake()
@@ -98,7 +98,13 @@ namespace OutOfPhase.Dimension
 
         private IEnumerator PlayTransitionEffect(int targetDimension)
         {
-            _isTransitioning = true;
+            // Epilepsy mode: simple color fade, no glitch/flash
+            if (UI.SettingsManager.EpilepsyMode)
+            {
+                yield return PlaySafeTransition(targetDimension);
+                yield break;
+            }
+
             SetOverlayActive(true);
             
             string targetName = DimensionManager.Instance.GetDimensionName(targetDimension);
@@ -203,7 +209,7 @@ namespace OutOfPhase.Dimension
             }
             
             SetOverlayActive(false);
-            _isTransitioning = false;
+
             _transitionCoroutine = null;
         }
 
@@ -226,6 +232,68 @@ namespace OutOfPhase.Dimension
         {
             if (effectCanvas != null)
                 effectCanvas.gameObject.SetActive(active);
+        }
+
+        /// <summary>
+        /// Epilepsy-safe transition: gentle fade to dimension color and back, no flashing.
+        /// </summary>
+        private IEnumerator PlaySafeTransition(int targetDimension)
+        {
+            SetOverlayActive(true);
+
+            Color targetColor = DimensionManager.Instance.GetDimensionColor(targetDimension);
+            string targetName = DimensionManager.Instance.GetDimensionName(targetDimension);
+
+            // Hide scanlines and glitch
+            if (scanlineOverlay != null) scanlineOverlay.color = Color.clear;
+            if (glitchOverlay != null) glitchOverlay.color = Color.clear;
+
+            // Show dimension name (static text, no corruption)
+            if (dimensionText != null)
+            {
+                dimensionText.text = $"SHIFTING TO:\n<size=48>{targetName.ToUpper()}</size>";
+                dimensionText.color = targetColor;
+            }
+
+            // Fade in
+            float half = transitionDuration * 0.5f;
+            float elapsed = 0f;
+            while (elapsed < half)
+            {
+                float t = elapsed / half;
+                Color c = targetColor;
+                c.a = Mathf.Lerp(0f, 0.5f, t);
+                mainOverlay.color = c;
+                if (dimensionText != null)
+                {
+                    Color tc = dimensionText.color;
+                    tc.a = t;
+                    dimensionText.color = tc;
+                }
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
+            // Fade out
+            elapsed = 0f;
+            while (elapsed < half)
+            {
+                float t = elapsed / half;
+                Color c = targetColor;
+                c.a = Mathf.Lerp(0.5f, 0f, t);
+                mainOverlay.color = c;
+                if (dimensionText != null)
+                {
+                    Color tc = dimensionText.color;
+                    tc.a = 1f - t;
+                    dimensionText.color = tc;
+                }
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
+            SetOverlayActive(false);
+            _transitionCoroutine = null;
         }
 
         #region Texture Generation
@@ -318,6 +386,8 @@ namespace OutOfPhase.Dimension
             CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
             
             // Main overlay (color fade)
             GameObject mainObj = new GameObject("MainOverlay");

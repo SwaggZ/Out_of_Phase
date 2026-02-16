@@ -5,8 +5,8 @@ using TMPro;
 namespace OutOfPhase.Interaction
 {
     /// <summary>
-    /// Simple UI for displaying interaction prompts.
-    /// Auto-creates UI elements if not assigned.
+    /// Displays [E] interaction prompts for IInteractable objects.
+    /// Always creates its own dedicated canvas to avoid CanvasGroup conflicts.
     /// </summary>
     public class InteractionPromptUI : MonoBehaviour
     {
@@ -34,31 +34,34 @@ namespace OutOfPhase.Interaction
                 interactor = FindFirstObjectByType<Interactor>();
 
             if (autoCreateUI && promptText == null)
-            {
                 CreateUI();
-            }
-            
+
             if (canvasGroup == null && promptText != null)
                 canvasGroup = promptText.GetComponentInParent<CanvasGroup>();
         }
 
         private void CreateUI()
         {
-            // Find or create canvas
-            Canvas canvas = FindFirstObjectByType<Canvas>();
-            if (canvas == null)
-            {
-                GameObject canvasObj = new GameObject("UI Canvas");
-                canvas = canvasObj.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                canvasObj.AddComponent<GraphicRaycaster>();
-            }
+            // Always create a DEDICATED canvas so other CanvasGroups
+            // (e.g. DialogueManager, DimensionTransitionEffect) cannot hide us.
+            GameObject canvasObj = new GameObject("InteractionPromptCanvas");
+            canvasObj.transform.SetParent(transform);
 
-            // Create prompt container
+            Canvas canvas = canvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 50; // above game UI, below dialogue (100)
+            canvasObj.AddComponent<GraphicRaycaster>();
+
+            CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
+            // Prompt container
             GameObject promptContainer = new GameObject("InteractionPrompt");
-            promptContainer.transform.SetParent(canvas.transform, false);
-            
+            promptContainer.transform.SetParent(canvasObj.transform, false);
+
             RectTransform containerRect = promptContainer.AddComponent<RectTransform>();
             containerRect.anchorMin = new Vector2(0.5f, 0.5f);
             containerRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -69,11 +72,9 @@ namespace OutOfPhase.Interaction
             canvasGroup = promptContainer.AddComponent<CanvasGroup>();
             canvasGroup.alpha = 0;
 
-            // Background
             _backgroundImage = promptContainer.AddComponent<Image>();
             _backgroundImage.color = backgroundColor;
 
-            // Add padding via content size fitter
             var layoutGroup = promptContainer.AddComponent<HorizontalLayoutGroup>();
             layoutGroup.padding = new RectOffset(20, 20, 10, 10);
             layoutGroup.childAlignment = TextAnchor.MiddleCenter;
@@ -100,25 +101,34 @@ namespace OutOfPhase.Interaction
 
         private void Update()
         {
+            // Retry finding Interactor every frame until found
+            if (interactor == null)
+                interactor = FindFirstObjectByType<Interactor>();
+
             if (interactor == null || promptText == null) return;
 
-            string prompt = interactor.GetFullPrompt();
-            
-            if (string.IsNullOrEmpty(prompt))
+            // Hide prompt while dialogue is playing
+            if (Dialogue.DialogueManager.Instance != null && Dialogue.DialogueManager.Instance.IsDialogueActive)
             {
                 _targetAlpha = 0f;
             }
             else
             {
-                promptText.text = prompt;
-                _targetAlpha = 1f;
+                string prompt = interactor.GetFullPrompt();
+
+                if (string.IsNullOrEmpty(prompt))
+                {
+                    _targetAlpha = 0f;
+                }
+                else
+                {
+                    promptText.text = prompt;
+                    _targetAlpha = 1f;
+                }
             }
 
-            // Fade
             if (canvasGroup != null)
-            {
                 canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, _targetAlpha, fadeSpeed * Time.deltaTime);
-            }
         }
     }
 }

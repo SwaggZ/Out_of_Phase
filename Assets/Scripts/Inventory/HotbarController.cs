@@ -26,6 +26,11 @@ namespace OutOfPhase.Inventory
         [Tooltip("Invert scroll direction")]
         [SerializeField] private bool invertScroll = false;
 
+        [Header("Audio")]
+        [Tooltip("Sound played when switching hotbar slots")]
+        [SerializeField] private AudioClip switchSound;
+        [SerializeField] private float switchSoundVolume = 0.3f;
+
         // Input
         private PlayerInputActions _inputActions;
 
@@ -47,6 +52,7 @@ namespace OutOfPhase.Inventory
         public ItemDefinition SelectedItem => SelectedInventorySlot?.Item;
         public bool HasItemSelected => SelectedItem != null;
         public Inventory Inventory => inventory;
+        public Transform HeldItemAnchor => heldItemAnchor;
 
         private void Awake()
         {
@@ -144,6 +150,10 @@ namespace OutOfPhase.Inventory
             EquipCurrentItem();
 
             var newItem = SelectedItem;
+
+            // Play switch sound
+            if (switchSound != null)
+                AudioSource.PlayClipAtPoint(switchSound, transform.position, switchSoundVolume);
 
             OnSelectedSlotChanged?.Invoke(oldSlot, _selectedSlot);
             
@@ -252,10 +262,21 @@ namespace OutOfPhase.Inventory
             {
                 _currentHeldInstance = Instantiate(
                     item.HeldPrefab,
-                    heldItemAnchor.position,
-                    heldItemAnchor.rotation,
                     heldItemAnchor
                 );
+                _currentHeldInstance.transform.localPosition = Vector3.zero;
+                _currentHeldInstance.transform.localRotation = Quaternion.identity;
+
+                // Disable physics on held items so they don't fall
+                foreach (var rb in _currentHeldInstance.GetComponentsInChildren<Rigidbody>())
+                {
+                    rb.isKinematic = true;
+                    rb.detectCollisions = false;
+                }
+                foreach (var col in _currentHeldInstance.GetComponentsInChildren<Collider>())
+                {
+                    col.enabled = false;
+                }
             }
         }
 
@@ -264,7 +285,9 @@ namespace OutOfPhase.Inventory
         /// </summary>
         public ToolUseContext CreateToolContext()
         {
-            var cameraTransform = Camera.main != null ? Camera.main.transform : transform;
+            Camera mainCam = Camera.main;
+            if (mainCam == null) mainCam = GameObject.Find("PlayerCamera")?.GetComponent<Camera>();
+            var cameraTransform = mainCam != null ? mainCam.transform : transform;
             
             return new ToolUseContext
             {

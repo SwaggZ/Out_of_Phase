@@ -60,9 +60,11 @@ namespace OutOfPhase.Items.ToolActions
                     
                     bool success = ignitable.ReceiveToolAction(this, context);
                     
-                    if (success && useSound != null)
+                    if (success)
                     {
-                        AudioSource.PlayClipAtPoint(useSound, hit.point);
+                        var clip = GetRandomClip(useSounds);
+                        if (clip != null)
+                            AudioSource.PlayClipAtPoint(clip, hit.point);
                     }
                     
                     return success;
@@ -75,6 +77,13 @@ namespace OutOfPhase.Items.ToolActions
         public override void OnEquip(ToolUseContext context)
         {
             if (context.CameraTransform == null || _activeLight != null) return;
+
+            // Play equip sound
+            var eqClip = GetRandomClip(equipSounds);
+            if (eqClip != null && context.PlayerTransform != null)
+            {
+                AudioSource.PlayClipAtPoint(eqClip, context.PlayerTransform.position, 0.5f);
+            }
 
             Transform lightParent = context.CameraTransform;
             Vector3 lightLocalPos = new Vector3(0.3f, -0.2f, 0.5f); // Default offset

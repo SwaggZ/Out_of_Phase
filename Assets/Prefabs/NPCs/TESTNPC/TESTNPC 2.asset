@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: TESTNPC 2
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: The Tester
+  nodes:
+  - speakerNameOverride: The Tester
+    text: Um, Hey
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: The Tester
+    text: Im here to test the dialogue
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: The Tester
+    text: Wait you want another torch...
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: The Tester
+    text: Walk away PUNK
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []

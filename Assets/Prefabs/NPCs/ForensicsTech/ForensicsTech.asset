@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: ForensicsTech
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: Scene Briefer
+  nodes:
+  - speakerNameOverride: Forensics Tech
+    text: 'We ran thermal, EM sweep, radiation scan.
+
+      Nothing.'
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: 'Vitals show instantaneous death.
+
+      Like something interrupted him
+      mid-cell cycle.'
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: 'No toxin traces.
+
+      No injection points.'
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: ...
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: "And there\u2019s this."
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: Not visible at first glance.
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: A distortion.
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: "Like heat haze \u2014\r\nbut colder."
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: 'A hairline fracture in space.
+
+      Three centimeters long.
+
+      Less
+      than a millimeter wide.'
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: "It wasn\u2019t there five minutes ago."
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+  - speakerNameOverride: Forensics Tech
+    text: 'No registered tech signature.
+
+      No phase beacon.
+
+      No portal
+      residue on file.'
+    choices: []
+    nextNodeIndex: 11
+    itemRewards: []

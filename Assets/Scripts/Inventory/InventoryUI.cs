@@ -44,10 +44,19 @@ namespace OutOfPhase.Inventory
             if (hotbarController == null)
                 hotbarController = FindFirstObjectByType<HotbarController>();
 
-            // Auto-create UI if needed
+            // Auto-create UI if needed (guard against duplicates)
             if (autoCreateUI && slotsContainer == null)
             {
-                CreateHotbarUI();
+                // Check if another InventoryUI already created the hotbar
+                var existing = GameObject.Find("Hotbar");
+                if (existing != null)
+                {
+                    slotsContainer = existing.GetComponent<RectTransform>();
+                }
+                else
+                {
+                    CreateHotbarUI();
+                }
             }
         }
 
@@ -83,13 +92,16 @@ namespace OutOfPhase.Inventory
                 canvas = canvasObj.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvas.sortingOrder = 0;
-                
-                var scaler = canvasObj.AddComponent<CanvasScaler>();
-                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                scaler.referenceResolution = new Vector2(1920, 1080);
-                
                 canvasObj.AddComponent<GraphicRaycaster>();
             }
+
+            // Always ensure proper scaling
+            var scaler = canvas.GetComponent<CanvasScaler>();
+            if (scaler == null) scaler = canvas.gameObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
 
             // Create hotbar container
             GameObject hotbarObj = new GameObject("Hotbar");

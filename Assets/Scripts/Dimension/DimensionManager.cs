@@ -42,10 +42,16 @@ namespace OutOfPhase.Dimension
         [Tooltip("Duration of dimension transition effect")]
         [SerializeField] private float transitionDuration = 0.3f;
 
+        [Tooltip("Cooldown after a dimension switch before another is allowed")]
+        [SerializeField] private float switchCooldown = 0.5f;
+
         // Current state
         private int _currentDimension;
         private bool _isTransitioning;
         private bool _switchingLocked;
+        private int[] _dimensionLockCounts;
+        private int[] _dimensionHideCounts;
+        private float _cooldownUntil;
 
         // Events
         /// <summary>Fired when dimension changes. Args: (oldDimension, newDimension)</summary>
@@ -59,7 +65,13 @@ namespace OutOfPhase.Dimension
         
         /// <summary>Fired when dimension switch is attempted while locked</summary>
         public event Action OnSwitchBlocked;
-        
+
+        /// <summary>Fired when per-dimension locks change</summary>
+        public event Action OnDimensionLocksChanged;
+
+        /// <summary>Fired when per-dimension visibility (hidden) changes</summary>
+        public event Action OnDimensionVisibilityChanged;
+
         /// <summary>Fired when DimensionManager is initialized and ready</summary>
         public static event Action OnManagerReady;
 
@@ -68,6 +80,21 @@ namespace OutOfPhase.Dimension
         public int DimensionCount => dimensionCount;
         public bool IsTransitioning => _isTransitioning;
         public bool IsSwitchingLocked => _switchingLocked;
+        public float SwitchCooldown => switchCooldown;
+        
+        /// <summary>0 = on cooldown, 1 = fully charged.</summary>
+        public float CooldownProgress
+        {
+            get
+            {
+                if (_isTransitioning) return 0f;
+                float remaining = _cooldownUntil - Time.time;
+                if (remaining <= 0f) return 1f;
+                return 1f - (remaining / switchCooldown);
+            }
+        }
+        
+        public bool IsOnCooldown => _isTransitioning || Time.time < _cooldownUntil;
         
         public string CurrentDimensionName => GetDimensionName(_currentDimension);
         public Color CurrentDimensionColor => GetDimensionColor(_currentDimension);
@@ -87,6 +114,7 @@ namespace OutOfPhase.Dimension
             
             // Ensure arrays are properly sized
             ValidateArraySizes();
+            EnsureLockArraySize();
             
             // Notify all listeners that manager is ready
             OnManagerReady?.Invoke();
@@ -119,6 +147,37 @@ namespace OutOfPhase.Dimension
             }
         }
 
+        private void EnsureLockArraySize()
+        {
+            if (_dimensionLockCounts == null || _dimensionLockCounts.Length != dimensionCount)
+            {
+                var newCounts = new int[dimensionCount];
+                if (_dimensionLockCounts != null)
+                {
+                    int copyCount = Mathf.Min(_dimensionLockCounts.Length, dimensionCount);
+                    for (int i = 0; i < copyCount; i++)
+                    {
+                        newCounts[i] = _dimensionLockCounts[i];
+                    }
+                }
+                _dimensionLockCounts = newCounts;
+            }
+
+            if (_dimensionHideCounts == null || _dimensionHideCounts.Length != dimensionCount)
+            {
+                var newCounts = new int[dimensionCount];
+                if (_dimensionHideCounts != null)
+                {
+                    int copyCount = Mathf.Min(_dimensionHideCounts.Length, dimensionCount);
+                    for (int i = 0; i < copyCount; i++)
+                    {
+                        newCounts[i] = _dimensionHideCounts[i];
+                    }
+                }
+                _dimensionHideCounts = newCounts;
+            }
+        }
+
         /// <summary>
         /// Switches to the specified dimension.
         /// </summary>
@@ -143,12 +202,41 @@ namespace OutOfPhase.Dimension
                 OnSwitchBlocked?.Invoke();
                 return false;
             }
+
+            // Check if target dimension is locked
+            if (IsDimensionLocked(targetDimension))
+            {
+                OnSwitchBlocked?.Invoke();
+                return false;
+            }
             
-            // Check if already transitioning
-            if (_isTransitioning)
+            // Check if already transitioning or on cooldown
+            if (_isTransitioning || Time.time < _cooldownUntil)
                 return false;
             
             // Perform the switch
+            StartCoroutine(TransitionToDimension(targetDimension));
+            return true;
+        }
+
+        /// <summary>
+        /// Forces a switch to a dimension, ignoring global switching lock.
+        /// Still respects per-dimension locks.
+        /// </summary>
+        public bool ForceSwitchToDimension(int targetDimension)
+        {
+            if (targetDimension < 0 || targetDimension >= dimensionCount)
+                return false;
+
+            if (IsDimensionLocked(targetDimension))
+                return false;
+
+            if (_isTransitioning)
+                return false;
+
+            if (targetDimension == _currentDimension)
+                return true;
+
             StartCoroutine(TransitionToDimension(targetDimension));
             return true;
         }
@@ -172,6 +260,7 @@ namespace OutOfPhase.Dimension
             OnDimensionChanged?.Invoke(oldDimension, _currentDimension);
             
             _isTransitioning = false;
+            _cooldownUntil = Time.time + switchCooldown;
             
             OnTransitionComplete?.Invoke(_currentDimension);
         }
@@ -209,6 +298,129 @@ namespace OutOfPhase.Dimension
         public void UnlockSwitching()
         {
             _switchingLocked = false;
+        }
+
+        /// <summary>
+        /// Adds per-dimension locks (increments lock counts).
+        /// </summary>
+        public void AddDimensionLocks(bool[] lockedDimensions)
+        {
+            EnsureLockArraySize();
+            if (lockedDimensions == null) return;
+
+            int count = Mathf.Min(lockedDimensions.Length, dimensionCount);
+            bool anyChanged = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (!lockedDimensions[i]) continue;
+                _dimensionLockCounts[i]++;
+                anyChanged = true;
+            }
+
+            if (anyChanged)
+                OnDimensionLocksChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Removes per-dimension locks (decrements lock counts).
+        /// </summary>
+        public void RemoveDimensionLocks(bool[] lockedDimensions)
+        {
+            EnsureLockArraySize();
+            if (lockedDimensions == null) return;
+
+            int count = Mathf.Min(lockedDimensions.Length, dimensionCount);
+            bool anyChanged = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (!lockedDimensions[i]) continue;
+                _dimensionLockCounts[i] = Mathf.Max(0, _dimensionLockCounts[i] - 1);
+                anyChanged = true;
+            }
+
+            if (anyChanged)
+                OnDimensionLocksChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Checks if a dimension is currently locked by any volume.
+        /// </summary>
+        public bool IsDimensionLocked(int dimension)
+        {
+            if (_dimensionLockCounts == null) return false;
+            if (dimension < 0 || dimension >= _dimensionLockCounts.Length) return false;
+            return _dimensionLockCounts[dimension] > 0;
+        }
+
+        /// <summary>
+        /// Adds per-dimension hides (increments hide counts).
+        /// Hidden dimensions are completely removed from the dimension wheel.
+        /// </summary>
+        public void AddDimensionHides(bool[] hiddenDimensions)
+        {
+            EnsureLockArraySize();
+            if (hiddenDimensions == null) return;
+
+            int count = Mathf.Min(hiddenDimensions.Length, dimensionCount);
+            bool anyChanged = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (!hiddenDimensions[i]) continue;
+                _dimensionHideCounts[i]++;
+                anyChanged = true;
+            }
+
+            if (anyChanged)
+                OnDimensionVisibilityChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Removes per-dimension hides (decrements hide counts).
+        /// </summary>
+        public void RemoveDimensionHides(bool[] hiddenDimensions)
+        {
+            EnsureLockArraySize();
+            if (hiddenDimensions == null) return;
+
+            int count = Mathf.Min(hiddenDimensions.Length, dimensionCount);
+            bool anyChanged = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (!hiddenDimensions[i]) continue;
+                _dimensionHideCounts[i] = Mathf.Max(0, _dimensionHideCounts[i] - 1);
+                anyChanged = true;
+            }
+
+            if (anyChanged)
+                OnDimensionVisibilityChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Checks if a dimension is currently hidden (not shown in wheel).
+        /// </summary>
+        public bool IsDimensionHidden(int dimension)
+        {
+            if (_dimensionHideCounts == null) return false;
+            if (dimension < 0 || dimension >= _dimensionHideCounts.Length) return false;
+            return _dimensionHideCounts[dimension] > 0;
+        }
+
+        /// <summary>
+        /// Finds the next unlocked dimension, starting after the given index.
+        /// Returns the current dimension if all are locked.
+        /// </summary>
+        public int FindNextUnlockedDimension(int fromDimension)
+        {
+            if (dimensionCount <= 0) return fromDimension;
+
+            for (int offset = 1; offset <= dimensionCount; offset++)
+            {
+                int index = (fromDimension + offset) % dimensionCount;
+                if (!IsDimensionLocked(index))
+                    return index;
+            }
+
+            return fromDimension;
         }
 
         /// <summary>
@@ -252,6 +464,7 @@ namespace OutOfPhase.Dimension
             dimensionCount = Mathf.Max(1, dimensionCount);
             startingDimension = Mathf.Clamp(startingDimension, 0, dimensionCount - 1);
             transitionDuration = Mathf.Max(0, transitionDuration);
+            EnsureLockArraySize();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace OutOfPhase.Items
         [SerializeField] private bool isMasterKey = false;
         
         [Tooltip("If true, key is consumed when used")]
-        [SerializeField] private bool consumeOnUse = false;
+        [SerializeField] private bool consumeOnUse = true;
         
         [Tooltip("Description of what this key unlocks (for UI hints)")]
         [SerializeField] private string unlocksDescription;
@@ -33,7 +33,7 @@ namespace OutOfPhase.Items
         public bool CanUnlock(string lockId)
         {
             if (isMasterKey) return true;
-            if (string.IsNullOrEmpty(lockId)) return true; // No lock = any key works
+            if (string.IsNullOrEmpty(lockId)) return false;
             return keyId == lockId;
         }
 

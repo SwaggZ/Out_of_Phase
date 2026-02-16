@@ -44,12 +44,6 @@ namespace OutOfPhase.Items.ToolActions
                             var vfx = Instantiate(hitVFXPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                             Destroy(vfx, 2f);
                         }
-                        
-                        // Play sound
-                        if (useSound != null)
-                        {
-                            AudioSource.PlayClipAtPoint(useSound, hit.point);
-                        }
                     }
                     
                     return success;

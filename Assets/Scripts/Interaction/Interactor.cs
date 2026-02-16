@@ -18,6 +18,7 @@ namespace OutOfPhase.Interaction
         [SerializeField] private Camera playerCamera;
         [SerializeField] private Inventory.Inventory inventory;
         [SerializeField] private HotbarController hotbar;
+        [SerializeField] private HeldItemAnimator heldItemAnimator;
 
         [Header("Raycast Settings")]
         [Tooltip("Maximum interaction distance")]
@@ -28,6 +29,10 @@ namespace OutOfPhase.Interaction
         
         [Tooltip("How often to update the raycast (seconds)")]
         [SerializeField] private float raycastUpdateRate = 0.05f;
+
+        [Header("Tool Cooldown")]
+        [Tooltip("Minimum time between tool uses in seconds")]
+        [SerializeField] private float toolUseCooldown = 0.45f;
 
         [Header("Highlight Settings")]
         [Tooltip("Enable outline/highlight on interactable objects")]
@@ -49,6 +54,7 @@ namespace OutOfPhase.Interaction
         private IKeyTarget _currentKeyTarget;
         private RaycastHit _currentHit;
         private float _lastRaycastTime;
+        private float _lastToolUseTime;
 
         // Events
         /// <summary>Fired when hover target changes (oldTarget, newTarget)</summary>
@@ -75,13 +81,29 @@ namespace OutOfPhase.Interaction
             // Auto-find references
             if (playerCamera == null)
                 playerCamera = Camera.main;
+                if (playerCamera == null)
+                    playerCamera = GameObject.Find("PlayerCamera")?.GetComponent<Camera>();
             if (inventory == null)
                 inventory = GetComponent<Inventory.Inventory>();
             if (hotbar == null)
                 hotbar = GetComponent<HotbarController>();
+            if (heldItemAnimator == null)
+                heldItemAnimator = GetComponent<HeldItemAnimator>();
+            if (heldItemAnimator == null)
+                heldItemAnimator = GetComponentInChildren<HeldItemAnimator>();
+            if (heldItemAnimator == null)
+                heldItemAnimator = GetComponentInParent<HeldItemAnimator>();
+            if (heldItemAnimator == null)
+                heldItemAnimator = FindFirstObjectByType<HeldItemAnimator>();
 
             // Cache player colliders to ignore during raycast
             _playerColliders = GetComponentsInChildren<Collider>();
+
+            // Auto-create InteractionPromptUI if none exists in the scene
+            if (FindFirstObjectByType<InteractionPromptUI>() == null)
+            {
+                gameObject.AddComponent<InteractionPromptUI>();
+            }
         }
 
         private void OnEnable()
@@ -111,7 +133,7 @@ namespace OutOfPhase.Interaction
         private void UpdateRaycast()
         {
             GameObject oldTarget = _currentTarget;
-            
+
             // Clear current
             _currentTarget = null;
             _currentInteractable = null;
@@ -120,35 +142,53 @@ namespace OutOfPhase.Interaction
 
             if (playerCamera == null) return;
 
-            // Perform raycast, ignoring player colliders
+            // SphereCast is more forgiving than a thin ray — easier to target NPCs / pickups
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            RaycastHit[] hits = Physics.RaycastAll(ray, interactionDistance, interactionLayers, QueryTriggerInteraction.Collide);
-            
-            // Sort by distance and find first non-player hit
+            RaycastHit[] hits = Physics.SphereCastAll(ray, 0.15f, interactionDistance,
+                interactionLayers, QueryTriggerInteraction.Collide);
+
+            // Sort by distance
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-            
+
             foreach (var hit in hits)
             {
-                // Skip player's own colliders
                 if (IsPlayerCollider(hit.collider)) continue;
-                
-                _currentHit = hit;
-                _currentTarget = hit.collider.gameObject;
-                
-                // Cache interface references
-                _currentInteractable = _currentTarget.GetComponent<IInteractable>();
-                _currentToolTarget = _currentTarget.GetComponent<IToolTarget>();
-                _currentKeyTarget = _currentTarget.GetComponent<IKeyTarget>();
-                
-                // Check parent if not found on collider object
-                if (_currentInteractable == null)
-                    _currentInteractable = _currentTarget.GetComponentInParent<IInteractable>();
-                if (_currentToolTarget == null)
-                    _currentToolTarget = _currentTarget.GetComponentInParent<IToolTarget>();
-                if (_currentKeyTarget == null)
-                    _currentKeyTarget = _currentTarget.GetComponentInParent<IKeyTarget>();
-                
-                break; // Found valid target, stop searching
+
+                GameObject hitObj = hit.collider.gameObject;
+
+                // Search for interaction interfaces: self → parent → children
+                IInteractable interactable = hitObj.GetComponent<IInteractable>()
+                    ?? hitObj.GetComponentInParent<IInteractable>()
+                    ?? hitObj.GetComponentInChildren<IInteractable>();
+
+                IToolTarget toolTarget = hitObj.GetComponent<IToolTarget>()
+                    ?? hitObj.GetComponentInParent<IToolTarget>();
+
+                IKeyTarget keyTarget = hitObj.GetComponent<IKeyTarget>()
+                    ?? hitObj.GetComponentInParent<IKeyTarget>();
+
+                bool hasInteraction = interactable != null || toolTarget != null || keyTarget != null;
+
+                if (hasInteraction)
+                {
+                    // Found an interactable — resolve its root GameObject
+                    _currentHit = hit;
+                    _currentTarget = hitObj;
+                    _currentInteractable = interactable;
+                    _currentToolTarget = toolTarget;
+                    _currentKeyTarget = keyTarget;
+                    break;
+                }
+
+                // Non-interactable solid collider blocks the ray (walls / terrain)
+                if (!hit.collider.isTrigger)
+                {
+                    _currentHit = hit;
+                    _currentTarget = hitObj;
+                    break;
+                }
+
+                // Trigger with no interaction — skip, keep looking
             }
 
             // Target changed?
@@ -223,9 +263,21 @@ namespace OutOfPhase.Interaction
         public bool TryUseItem()
         {
             if (hotbar == null) return false;
-            
+
             var selectedItem = hotbar.SelectedItem;
             if (selectedItem == null) return false;
+
+            // Enforce cooldown
+            if (Time.time - _lastToolUseTime < toolUseCooldown) return false;
+            _lastToolUseTime = Time.time;
+
+            // Always play a swing animation immediately on click
+            if (heldItemAnimator != null && selectedItem.ToolActions != null && selectedItem.ToolActions.Length > 0)
+            {
+                var primaryAction = selectedItem.ToolActions[0];
+                if (primaryAction != null)
+                    heldItemAnimator.PlayToolAnimation(primaryAction);
+            }
 
             // Create tool context
             var toolContext = new ToolUseContext
@@ -254,7 +306,11 @@ namespace OutOfPhase.Interaction
                             // Apply durability if applicable
                             ApplyToolDurability(action);
                             
-                            // Play sound
+                            // Play swing sound (whoosh), then hit sound
+                            if (action.SwingSound != null)
+                            {
+                                AudioSource.PlayClipAtPoint(action.SwingSound, _currentHit.point, 0.6f);
+                            }
                             if (action.UseSound != null)
                             {
                                 AudioSource.PlayClipAtPoint(action.UseSound, _currentHit.point);

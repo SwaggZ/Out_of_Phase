@@ -150,6 +150,15 @@ namespace OutOfPhase.Player
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""c0000001-0001-0001-0001-000000000001"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -339,6 +348,17 @@ namespace OutOfPhase.Player
                     ""action"": ""DimensionWheel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77777777-7777-7777-7777-777777777777"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""DropItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -377,6 +397,7 @@ namespace OutOfPhase.Player
             m_Player_HotbarSlot4 = m_Player.FindAction("HotbarSlot4", throwIfNotFound: true);
             m_Player_HotbarSlot5 = m_Player.FindAction("HotbarSlot5", throwIfNotFound: true);
             m_Player_DimensionWheel = m_Player.FindAction("DimensionWheel", throwIfNotFound: true);
+            m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -450,6 +471,7 @@ namespace OutOfPhase.Player
         private readonly InputAction m_Player_HotbarSlot4;
         private readonly InputAction m_Player_HotbarSlot5;
         private readonly InputAction m_Player_DimensionWheel;
+        private readonly InputAction m_Player_DropItem;
 
         public struct PlayerActions
         {
@@ -469,6 +491,7 @@ namespace OutOfPhase.Player
             public InputAction HotbarSlot4 => m_Wrapper.m_Player_HotbarSlot4;
             public InputAction HotbarSlot5 => m_Wrapper.m_Player_HotbarSlot5;
             public InputAction DimensionWheel => m_Wrapper.m_Player_DimensionWheel;
+            public InputAction DropItem => m_Wrapper.m_Player_DropItem;
             
             public InputActionMap Get() => m_Wrapper.m_Player;
             public void Enable() => Get().Enable();

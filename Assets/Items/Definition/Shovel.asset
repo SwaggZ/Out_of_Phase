@@ -15,9 +15,9 @@ MonoBehaviour:
   itemId: shovel
   itemName: Shovel
   description: Used to dig up buried items.
-  icon: {fileID: 0}
-  worldPrefab: {fileID: 2335828800214212570, guid: 61c53b69bd2f8b248842a293423b2411, type: 3}
-  heldPrefab: {fileID: 2335828800214212570, guid: 61c53b69bd2f8b248842a293423b2411, type: 3}
+  icon: {fileID: 21300000, guid: 6f23667a0302e864b9ae06bdddbd5bc4, type: 3}
+  worldPrefab: {fileID: 2335828800214212570, guid: 48c8b5780147aaa4faf17d781558c90d, type: 3}
+  heldPrefab: {fileID: 2335828800214212570, guid: 48c8b5780147aaa4faf17d781558c90d, type: 3}
   isStackable: 0
   maxStackSize: 1
   hasDurability: 1

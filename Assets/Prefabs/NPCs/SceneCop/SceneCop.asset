@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: SceneCop
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: Scene Briefer
+  nodes:
+  - speakerNameOverride: Officer
+    text: Detective.
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: Officer
+    text: 'Victim was found at 02:19.
+
+      No witnesses.
+
+      No disturbance
+      reported.
+
+      We locked the perimeter within three minutes.'
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: Officer
+    text: No one saw anything.
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: Officer
+    text: 'The body lies on polished concrete.
+
+      No visible trauma.
+
+      No
+      blood pooling.
+
+      No defensive wounds.
+
+      Hands relaxed at the sides.'
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: Officer
+    text: "The victim\u2019s eyes are open.\r\nFrozen mid-expression."
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []

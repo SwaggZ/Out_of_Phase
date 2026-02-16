@@ -65,7 +65,6 @@ namespace OutOfPhase.Interaction
             if (remaining < quantity) // At least some were added
             {
                 int added = quantity - remaining;
-                Debug.Log($"Picked up {added}x {item.ItemName}");
                 
                 // Play sound
                 if (pickupSound != null)

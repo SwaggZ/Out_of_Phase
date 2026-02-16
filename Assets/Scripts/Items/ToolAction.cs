@@ -21,14 +21,31 @@ namespace OutOfPhase.Items
         [Tooltip("Cooldown between uses in seconds")]
         [SerializeField] protected float cooldown = 0.5f;
         
-        [Tooltip("Sound to play when using this tool")]
-        [SerializeField] protected AudioClip useSound;
+        [Tooltip("Sounds to play when this tool hits (random pick)")]
+        [SerializeField] protected AudioClip[] useSounds;
+
+        [Tooltip("Sounds to play on every swing/use attempt, even on miss (random pick)")]
+        [SerializeField] protected AudioClip[] swingSounds;
+
+        [Tooltip("Sounds to play when this tool is equipped (random pick)")]
+        [SerializeField] protected AudioClip[] equipSounds;
 
         // Public accessors
         public string ActionName => actionName;
         public float DurabilityCost => durabilityCost;
         public float Cooldown => cooldown;
-        public AudioClip UseSound => useSound;
+        public AudioClip UseSound => GetRandomClip(useSounds);
+        public AudioClip SwingSound => GetRandomClip(swingSounds);
+        public AudioClip EquipSound => GetRandomClip(equipSounds);
+
+        /// <summary>
+        /// Returns a random clip from an array, or null if the array is empty/null.
+        /// </summary>
+        protected static AudioClip GetRandomClip(AudioClip[] clips)
+        {
+            if (clips == null || clips.Length == 0) return null;
+            return clips[Random.Range(0, clips.Length)];
+        }
 
         /// <summary>
         /// Called when the player uses this tool action (left click).
