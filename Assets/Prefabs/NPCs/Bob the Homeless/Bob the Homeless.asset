@@ -39,12 +39,23 @@ MonoBehaviour:
     - choiceText: What ever, just tell me what you need
       targetNodeIndex: 4
     - choiceText: Sure Bob how can i help you.
-      targetNodeIndex: 4
+      targetNodeIndex: 5
     nextNodeIndex: 4
     itemRewards: []
   - speakerNameOverride: Bob the homeless
     text: Some one locked and moved the Homeless shelter, with a weight sensor, find
       a heavy enough object, to open it.
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []
+  - speakerNameOverride: Bob the homeless
+    text: Some one locked and moved the Homeless shelter, with a weight sensor, find
+      a heavy enough object, to open it.
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: Bob the homeless
+    text: Also look around, maybe something will capture your eyes
     choices: []
     nextNodeIndex: -1
     itemRewards: []

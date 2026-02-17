@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -11,6 +12,13 @@ namespace OutOfPhase.Interaction
         [Header("Identity")]
         [Tooltip("Display name shown in interaction prompt.")]
         [SerializeField] private string boxName = "Box";
+
+        [Header("Dimension")]
+        [Tooltip("If true, the box switches to the player's current dimension when placed.")]
+        [SerializeField] private bool syncDimensionOnPlace = true;
+
+        [Tooltip("If true, re-parent the box under the active DimensionContainer root when placed.")]
+        [SerializeField] private bool reparentToDimensionRoot = true;
 
         [Header("Audio")]
         [SerializeField] private AudioClip pickupSound;
@@ -51,6 +59,7 @@ namespace OutOfPhase.Interaction
         public void PlaceAt(Vector3 position)
         {
             transform.position = position;
+            SyncToCurrentDimension();
             gameObject.SetActive(true);
             _carriedBox = null;
 
@@ -70,6 +79,36 @@ namespace OutOfPhase.Interaction
         public static void ClearCarried()
         {
             _carriedBox = null;
+        }
+
+        private void SyncToCurrentDimension()
+        {
+            if (!syncDimensionOnPlace) return;
+            if (DimensionManager.Instance == null) return;
+
+            int currentDimension = DimensionManager.Instance.CurrentDimension;
+
+            var dimensionObject = GetComponent<DimensionObject>();
+            if (dimensionObject == null)
+            {
+                dimensionObject = GetComponentInChildren<DimensionObject>();
+            }
+
+            if (dimensionObject != null)
+            {
+                dimensionObject.SetVisibleDimensions(currentDimension);
+            }
+
+            if (!reparentToDimensionRoot) return;
+
+            var container = FindFirstObjectByType<DimensionContainer>();
+            if (container == null) return;
+
+            var root = container.GetDimensionRoot(currentDimension);
+            if (root != null && transform.parent != root.transform)
+            {
+                transform.SetParent(root.transform, true);
+            }
         }
 
         private void OnDrawGizmos()
