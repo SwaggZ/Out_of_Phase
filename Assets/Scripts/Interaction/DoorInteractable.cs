@@ -115,6 +115,44 @@ namespace OutOfPhase.Interaction
             return true;
         }
 
+        /// <summary>
+        /// Unlock the door and open it (used by PressurePlate).
+        /// </summary>
+        public void UnlockAndOpen()
+        {
+            _isLocked = false;
+
+            if (!_isOpen)
+            {
+                _isOpen = true;
+                _targetRotation = GetOpenRotation(null);
+                _isAnimating = true;
+
+                if (unlockSound != null)
+                    AudioSource.PlayClipAtPoint(unlockSound, transform.position);
+                else if (openSound != null)
+                    AudioSource.PlayClipAtPoint(openSound, transform.position);
+            }
+        }
+
+        /// <summary>
+        /// Close and re-lock the door (used by PressurePlate on release).
+        /// </summary>
+        public void LockAndClose()
+        {
+            if (_isOpen)
+            {
+                _isOpen = false;
+                _targetRotation = _closedRotation;
+                _isAnimating = true;
+
+                if (closeSound != null)
+                    AudioSource.PlayClipAtPoint(closeSound, transform.position);
+            }
+
+            _isLocked = startLocked; // restore original lock state
+        }
+
         private void ToggleDoor(Transform player)
         {
             _isOpen = !_isOpen;

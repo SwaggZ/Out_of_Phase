@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351c556cfc2e4e34ea5cde2fa00b3a77, type: 3}
+  m_Name: Section2.2
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
+  questId: 2.2
+  title: Talk to the forensics tech the scene
+  description: Let the forensics explain what he knows
+  questType: 0
+  targetNPCName: ForensicsTech
+  targetDialogue: {fileID: 11400000, guid: 1f37829499fc45843a8956cac012c24b, type: 2}
+  targetItem: {fileID: 0}
+  targetItemCount: 1
+  autoComplete: 1

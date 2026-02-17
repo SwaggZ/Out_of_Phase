@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 8435514299158430142}
   - component: {fileID: 2385158482713320820}
   - component: {fileID: 5583664811834264944}
-  - component: {fileID: 8720190980905184663}
+  - component: {fileID: 635936297312462147}
   - component: {fileID: 8862712860064595201}
   - component: {fileID: 7028907998173674662}
   - component: {fileID: 7568593508681458727}
@@ -163,6 +163,7 @@ GameObject:
   - component: {fileID: 5960135332030601599}
   - component: {fileID: 7509652191923243267}
   - component: {fileID: 4847763927881019013}
+  - component: {fileID: 6283386474040887955}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -292,7 +293,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8720190980905184663
+--- !u!114 &635936297312462147
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -319,7 +320,7 @@ MonoBehaviour:
   groundCheckOffset: 0.1
   groundLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 183
   maxSlopeAngle: 45
   stepHeight: 0.3
 --- !u!114 &8862712860064595201
@@ -530,6 +531,23 @@ MonoBehaviour:
   minSpeedThreshold: 0.5
   minPitch: 0.9
   maxPitch: 1.1
+--- !u!114 &6283386474040887955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066068728492496052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 935bb91e8faf1664eaf18718cbe053c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestUI
+  completedDisplayTime: 1.5
+  activeTextColor: {r: 0.85, g: 0.92, b: 1, a: 1}
+  completedTextColor: {r: 0.4, g: 0.8, b: 0.4, a: 1}
+  headerColor: {r: 0, g: 0.85, b: 1, a: 1}
+  bgColor: {r: 0.02, g: 0.02, b: 0.06, a: 0.55}
 --- !u!1 &3865481754032919164
 GameObject:
   m_ObjectHideFlags: 0

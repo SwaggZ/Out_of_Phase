@@ -20,8 +20,8 @@ MonoBehaviour:
   equipSounds:
   - {fileID: 8300000, guid: 89fc2e86edca51941810f616783af30a, type: 3}
   lightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
-  lightIntensity: 2
-  lightRange: 10
+  lightIntensity: 4
+  lightRange: 15
   enableFlicker: 1
   flickerSpeed: 15
   flickerAmount: 0.2

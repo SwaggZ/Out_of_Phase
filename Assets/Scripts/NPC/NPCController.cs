@@ -1,6 +1,7 @@
 using UnityEngine;
 using OutOfPhase.Interaction;
 using OutOfPhase.Dialogue;
+using OutOfPhase.Quest;
 
 namespace OutOfPhase.NPC
 {
@@ -111,13 +112,20 @@ namespace OutOfPhase.NPC
                 AudioSource.PlayClipAtPoint(greetingSound, transform.position, greetingSoundVolume);
             }
 
+            _lastPlayedDialogue = dialogueToPlay;
             DialogueManager.Instance.StartDialogue(dialogueToPlay, transform, OnDialogueEnded);
         }
+
+        private DialogueData _lastPlayedDialogue;
 
         private void OnDialogueEnded()
         {
             _inDialogue = false;
             _hasSpoken = true;
+
+            // Notify quest system
+            if (QuestManager.Instance != null)
+                QuestManager.Instance.NotifyTalkedTo(npcName, _lastPlayedDialogue);
         }
 
         private void LookAtPlayer()

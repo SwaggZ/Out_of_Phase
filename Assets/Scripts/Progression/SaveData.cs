@@ -31,6 +31,10 @@ namespace OutOfPhase.Progression
         // ── Flags (generic key-value for quests, NPC state, etc.) ──
         public StringBoolPair[] flags = Array.Empty<StringBoolPair>();
 
+        // ── Quests ──
+        public string[] completedQuestIds = Array.Empty<string>();
+        public string[] activeQuestIds = Array.Empty<string>();
+
         // ── Helpers ──
         public Vector3 GetPlayerPosition() =>
             new Vector3(playerPosition[0], playerPosition[1], playerPosition[2]);

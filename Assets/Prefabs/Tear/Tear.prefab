@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7371056966989892508
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2568807645082164263}
+  - component: {fileID: 5842014900805756172}
+  - component: {fileID: 415178524518885648}
+  m_Layer: 0
+  m_Name: Tear
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2568807645082164263
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371056966989892508}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.874, y: 0.51, z: 4.157}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &5842014900805756172
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371056966989892508}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.25
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &415178524518885648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371056966989892508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 037a4c2a46a85f642999acd7e714eb70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.SpaceTear
+  scale: 1
+  starPoints: 4
+  coreCount: 60
+  coreLifetime: 1.2
+  coreSize: 0.35
+  rayCount: 12
+  rayLifetime: 1
+  rayLength: 2.5
+  rayWidth: 0.12
+  raySpeed: 1.5
+  nebulaCount: 100
+  nebulaLifetime: 2.5
+  nebulaSize: 0.35
+  fragmentCount: 25
+  fragmentLife: 1.4
+  fragmentSize: 0.22
+  shimmerCount: 50
+  shimmerLife: 0.7
+  shimmerSize: 0.08
+  shimmerSpeed: 3
+  wispCount: 35
+  wispLifetime: 1.2
+  wispSize: 0.14
+  wispSpeed: 1.2
+  starVerticalRadius: 0.9
+  starHorizontalRadius: 0.45
+  starInnerRadius: 0.2
+  starConcavity: 0.1

@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: Bob the Homeless
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: Bob the homeless
+  nodes:
+  - speakerNameOverride: Bob the homeless
+    text: Ok, Ok ill move.
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: You
+    text: 
+    choices:
+    - choiceText: No, its ok im not here for you.
+      targetNodeIndex: 2
+    - choiceText: Relax Bob, im not here to kick you out this time.
+      targetNodeIndex: 2
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: Bob the homeless
+    text: So maybe you can help me.
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: You
+    text: 
+    choices:
+    - choiceText: What ever, just tell me what you need
+      targetNodeIndex: 4
+    - choiceText: Sure Bob how can i help you.
+      targetNodeIndex: 4
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: Bob the homeless
+    text: Some one locked and moved the Homeless shelter, with a weight sensor, find
+      a heavy enough object, to open it.
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using OutOfPhase.Items;
+using OutOfPhase.Quest;
 
 namespace OutOfPhase.Progression
 {
@@ -20,6 +21,10 @@ namespace OutOfPhase.Progression
         [Header("Item Database")]
         [Tooltip("All ItemDefinitions in the game. Needed to reconstruct inventory on load.")]
         [SerializeField] private ItemDefinition[] allItems;
+
+        [Header("Quest Database")]
+        [Tooltip("All QuestDefinitions in the game. Needed to reconstruct active quests on load.")]
+        [SerializeField] private QuestDefinition[] allQuests;
 
         // ── Game Flags (key-value store) ──
         private Dictionary<string, bool> _gameFlags = new Dictionary<string, bool>();
@@ -125,6 +130,13 @@ namespace OutOfPhase.Progression
                 flagList.Add(new StringBoolPair { key = kvp.Key, value = kvp.Value });
             data.flags = flagList.ToArray();
 
+            // Quests
+            if (QuestManager.Instance != null)
+            {
+                data.completedQuestIds = QuestManager.Instance.GetCompletedQuestIds();
+                data.activeQuestIds = QuestManager.Instance.GetActiveQuestIds();
+            }
+
             // Write
             string json = JsonUtility.ToJson(data, false);
             PlayerPrefs.SetString(SAVE_KEY, json);
@@ -208,6 +220,13 @@ namespace OutOfPhase.Progression
             {
                 foreach (var pair in data.flags)
                     _gameFlags[pair.key] = pair.value;
+            }
+
+            // Quests
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.RestoreCompletedQuests(data.completedQuestIds);
+                QuestManager.Instance.RestoreActiveQuests(data.activeQuestIds, allQuests);
             }
 
             Debug.Log($"[Checkpoint] Loaded: {data.saveName} (section {data.currentSectionIndex})");
