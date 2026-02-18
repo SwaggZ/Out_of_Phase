@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: Second Tear
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: You
+  nodes:
+  - speakerNameOverride: You
+    text: "Another one\u2026"
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: You
+    text: No.
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "I just came back from a dead city buried in sand \u2014 buildings hollowed
+      out, time stalled like it was holding its breath."
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "That tear wasn\u2019t random. It was anchored."
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "And now there\u2019s this."
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Different frequency. Different distortion.
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: You
+    text: I can see vegetation bleeding through the fracture. Vines where there should
+      be skyline. Air that looks thick. Alive.
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "So the first wasn\u2019t an anomaly."
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+  - speakerNameOverride: You
+    text: It was a path.
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Ruined Past\u2026 and now something beyond it."
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Not decay.
+    choices: []
+    nextNodeIndex: 11
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Overgrowth.
+    choices: []
+    nextNodeIndex: 12
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Like the world kept going \u2014 just without us."
+    choices: []
+    nextNodeIndex: 13
+    itemRewards: []
+  - speakerNameOverride: You
+    text: The math said tears would destabilize space.
+    choices: []
+    nextNodeIndex: 14
+    itemRewards: []
+  - speakerNameOverride: You
+    text: But this?
+    choices: []
+    nextNodeIndex: 15
+    itemRewards: []
+  - speakerNameOverride: You
+    text: This is a network.
+    choices: []
+    nextNodeIndex: 16
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Someone isn\u2019t tearing holes."
+    choices: []
+    nextNodeIndex: 17
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "They\u2019re stitching dimensions together."
+    choices: []
+    nextNodeIndex: 18
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "They\u2019re stitching dimensions together."
+    choices: []
+    nextNodeIndex: 19
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "They\u2019re stitching dimensions together."
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []

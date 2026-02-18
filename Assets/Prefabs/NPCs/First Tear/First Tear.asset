@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: First Tear
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: You
+  nodes:
+  - speakerNameOverride: You
+    text: A multi-dimensional tear?
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "That\u2019s impossible."
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Those are theoretical models \u2014 unstable math, lab simulations. Not
+      something you find bleeding through an alley wall."
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "This isn\u2019t fire damage. It isn\u2019t an energy discharge."
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "It\u2019s\u2026 a gap."
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Like space forgot to stay connected.
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "The edges aren\u2019t burning \u2014 they\u2019re thinning. Folding inward.
+      Like something pressed from the other side."
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "We don\u2019t even know if tears can exist outside equations."
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "And yet\u2026"
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "If the theory was right about one thing\u2014"
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Tears don\u2019t open by themselves."
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []
