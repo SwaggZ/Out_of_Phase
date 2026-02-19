@@ -1,6 +1,7 @@
 using UnityEngine;
 using OutOfPhase.Items;
 using OutOfPhase.Items.ToolActions;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -72,7 +73,7 @@ namespace OutOfPhase.Interaction
             }
 
             if (digCompleteSound != null)
-                AudioSource.PlayClipAtPoint(digCompleteSound, transform.position);
+                SFXPlayer.PlayAtPoint(digCompleteSound, transform.position);
 
             if (destroyOnComplete)
                 Destroy(gameObject);

@@ -514,7 +514,7 @@ namespace OutOfPhase.Cinematic
             _speakerText.fontStyle = FontStyles.Bold;
             _speakerText.color = speakerColor;
             _speakerText.alignment = TextAlignmentOptions.TopLeft;
-            _speakerText.enableWordWrapping = false;
+            _speakerText.textWrappingMode = TextWrappingModes.NoWrap;
 
             // Body text
             var bodyObj = new GameObject("BodyText");
@@ -528,7 +528,7 @@ namespace OutOfPhase.Cinematic
             _bodyText.fontSize = 18;
             _bodyText.color = textColor;
             _bodyText.alignment = TextAlignmentOptions.TopLeft;
-            _bodyText.enableWordWrapping = true;
+            _bodyText.textWrappingMode = TextWrappingModes.Normal;
 
             // Continue hint
             var hintObj = new GameObject("ContinueHint");

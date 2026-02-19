@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using OutOfPhase.Items;
 using OutOfPhase.Player;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Inventory
 {
@@ -153,7 +154,7 @@ namespace OutOfPhase.Inventory
 
             // Play switch sound
             if (switchSound != null)
-                AudioSource.PlayClipAtPoint(switchSound, transform.position, switchSoundVolume);
+                SFXPlayer.PlayAtPoint(switchSound, transform.position, switchSoundVolume);
 
             OnSelectedSlotChanged?.Invoke(oldSlot, _selectedSlot);
             

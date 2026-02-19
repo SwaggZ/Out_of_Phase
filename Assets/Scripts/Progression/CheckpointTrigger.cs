@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Progression
 {
@@ -65,7 +66,7 @@ namespace OutOfPhase.Progression
 
             // Feedback
             if (saveSound != null)
-                AudioSource.PlayClipAtPoint(saveSound, transform.position, saveVolume);
+                SFXPlayer.PlayAtPoint(saveSound, transform.position, saveVolume);
 
             if (saveVFX != null)
             {

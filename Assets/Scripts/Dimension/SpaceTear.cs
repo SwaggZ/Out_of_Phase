@@ -51,7 +51,9 @@ namespace OutOfPhase.Dimension
         [SerializeField] private int   wispCount      = 35;
         [SerializeField] private float wispLifetime   = 1.2f;
         [SerializeField] private float wispSize       = 0.14f;
+        #pragma warning disable CS0414 // Reserved for future wisp orbit speed
         [SerializeField] private float wispSpeed      = 1.2f;
+        #pragma warning restore CS0414
 
         [Header("Center Star Shape")]
         [Tooltip("Radius of the vertical (top/bottom) star tips.")]
@@ -139,33 +141,35 @@ namespace OutOfPhase.Dimension
 
             // 3. Colour tint: white-pink at rest → dark purple at peak
             var tintedColor = Color.Lerp(_starBaseColor, HDR(ColDeepViolet, HDR_MID), breath * breathTintStrength);
-            _starMat.SetColor("_BaseColor", tintedColor);
+            _starMat.SetColor("_TintColor", tintedColor);
         }
 
         // ── Materials ──────────────────────────────────────────────────
         private Material CreateMaterial(bool additive)
         {
-            var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-            if (shader == null) shader = Shader.Find("Particles/Standard Unlit");
-            if (shader == null) shader = Shader.Find("Legacy Shaders/Particles/Additive");
-
-            var mat = new Material(shader);
-            mat.SetFloat("_Surface", 1); // Transparent
-
+            // Use legacy shader for reliable ZTest override (renders through objects)
+            Shader shader;
             if (additive)
             {
-                mat.SetFloat("_Blend", 1); // Additive
-                mat.EnableKeyword("_BLENDMODE_ADD");
+                shader = Shader.Find("Legacy Shaders/Particles/Additive");
+                if (shader == null) shader = Shader.Find("Particles/Additive");
             }
             else
             {
-                mat.SetFloat("_Blend", 0); // Alpha
-                mat.EnableKeyword("_BLENDMODE_ALPHA");
+                shader = Shader.Find("Legacy Shaders/Particles/Alpha Blended");
+                if (shader == null) shader = Shader.Find("Particles/Alpha Blended");
             }
 
-            mat.SetFloat("_ColorMode", 0);
-            mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-            mat.renderQueue = additive ? 3100 : 3050;
+            // Fallback to URP if legacy not available
+            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+
+            var mat = new Material(shader);
+
+            // Disable depth testing - renders through all objects
+            mat.SetInt("_ZWrite", 0);
+            mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+            mat.renderQueue = 4000; // Overlay queue - renders after everything
+
             return mat;
         }
 
@@ -234,7 +238,7 @@ namespace OutOfPhase.Dimension
 
             // render as mesh with its own material for breathing tint
             _starMat = new Material(_additiveMat);
-            _starMat.SetColor("_BaseColor", HDR(ColWhiteCore, HDR_CORE));
+            _starMat.SetColor("_TintColor", HDR(ColWhiteCore, HDR_CORE));
 
             _starRend = ps.GetComponent<ParticleSystemRenderer>();
             _starRend.renderMode  = ParticleSystemRenderMode.Mesh;

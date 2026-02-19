@@ -109,6 +109,13 @@ namespace OutOfPhase.UI
             {
                 audioController.SetChannelVolumes(Current.musicVolume, Current.ambienceVolume);
             }
+
+            // Apply SFX volume to the SFXPlayer
+            var sfxPlayer = Dimension.SFXPlayer.Instance;
+            if (sfxPlayer != null)
+            {
+                sfxPlayer.SetSFXVolume(Current.sfxVolume);
+            }
         }
 
         #endregion

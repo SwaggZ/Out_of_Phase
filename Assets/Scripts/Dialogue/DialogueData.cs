@@ -59,6 +59,12 @@ namespace OutOfPhase.Dialogue
 
         [Tooltip("Index of the node to jump to when this choice is selected (-1 = end dialogue)")]
         public int targetNodeIndex = -1;
+
+        [Tooltip("Items required for this choice to be available. Player must have these items.")]
+        public ItemCost[] requiredItems;
+
+        [Tooltip("Items taken from the player when this choice is selected. Leave empty if not a trade.")]
+        public ItemCost[] itemCosts;
     }
 
     /// <summary>
@@ -72,6 +78,20 @@ namespace OutOfPhase.Dialogue
         public ItemDefinition item;
 
         [Tooltip("How many to give")]
+        public int quantity = 1;
+    }
+
+    /// <summary>
+    /// An item cost/requirement for a dialogue choice or node.
+    /// Items will be taken from the player when the choice/node is activated.
+    /// </summary>
+    [System.Serializable]
+    public class ItemCost
+    {
+        [Tooltip("The item required/consumed")]
+        public ItemDefinition item;
+
+        [Tooltip("How many are required/consumed")]
         public int quantity = 1;
     }
 }

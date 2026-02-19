@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using OutOfPhase.Items;
 using OutOfPhase.Inventory;
 using OutOfPhase.Player;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -163,7 +164,7 @@ namespace OutOfPhase.Interaction
 
             // Play drop sound
             if (dropSound != null)
-                AudioSource.PlayClipAtPoint(dropSound, dropPos, dropSoundVolume);
+                SFXPlayer.PlayAtPoint(dropSound, dropPos, dropSoundVolume);
 
             // Remove one from inventory
             hotbar.Inventory.RemoveFromSlot(hotbar.SelectedSlot, 1);

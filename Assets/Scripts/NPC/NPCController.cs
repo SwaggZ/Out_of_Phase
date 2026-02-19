@@ -2,6 +2,7 @@ using UnityEngine;
 using OutOfPhase.Interaction;
 using OutOfPhase.Dialogue;
 using OutOfPhase.Quest;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.NPC
 {
@@ -109,7 +110,7 @@ namespace OutOfPhase.NPC
             // Play greeting sound
             if (greetingSound != null)
             {
-                AudioSource.PlayClipAtPoint(greetingSound, transform.position, greetingSoundVolume);
+                SFXPlayer.PlayAtPoint(greetingSound, transform.position, greetingSoundVolume);
             }
 
             _lastPlayedDialogue = dialogueToPlay;

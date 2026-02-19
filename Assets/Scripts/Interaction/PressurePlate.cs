@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -93,7 +94,7 @@ namespace OutOfPhase.Interaction
             _isPressed = true;
 
             if (pressSound != null)
-                AudioSource.PlayClipAtPoint(pressSound, transform.position, soundVolume);
+                SFXPlayer.PlayAtPoint(pressSound, transform.position, soundVolume);
 
             // Open connected doors
             foreach (var door in connectedDoors)
@@ -110,7 +111,7 @@ namespace OutOfPhase.Interaction
             _isPressed = false;
 
             if (releaseSound != null)
-                AudioSource.PlayClipAtPoint(releaseSound, transform.position, soundVolume);
+                SFXPlayer.PlayAtPoint(releaseSound, transform.position, soundVolume);
 
             // Close connected doors
             foreach (var door in connectedDoors)

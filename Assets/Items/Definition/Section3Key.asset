@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Section3Key
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Items.KeyItemDefinition
   itemId: key
-  itemName: Garage Key
-  description: This key unlocks the door of the garage
+  itemName: Rooftop
+  description: This key unlocks the door to the rooftop ladder
   icon: {fileID: 21300000, guid: 58686b686c15b5344b9171a1b1f1858b, type: 3}
   worldPrefab: {fileID: 5433465296886476256, guid: da6f758e24545964ca7dc4ea1a0ecf8e, type: 3}
   heldPrefab: {fileID: 5433465296886476256, guid: da6f758e24545964ca7dc4ea1a0ecf8e, type: 3}

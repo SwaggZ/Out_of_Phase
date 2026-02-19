@@ -1,5 +1,6 @@
 using UnityEngine;
 using OutOfPhase.Items.ToolActions;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -41,7 +42,7 @@ namespace OutOfPhase.Interaction
             Instantiate(placedTorchPrefab, placementPoint.position, placementPoint.rotation);
 
             if (placeSound != null)
-                AudioSource.PlayClipAtPoint(placeSound, placementPoint.position);
+                SFXPlayer.PlayAtPoint(placeSound, placementPoint.position);
 
             _placed = true;
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -92,7 +93,7 @@ namespace OutOfPhase.Interaction
             if (_isLocked)
             {
                 if (lockedSound != null)
-                    AudioSource.PlayClipAtPoint(lockedSound, transform.position);
+                    SFXPlayer.PlayAtPoint(lockedSound, transform.position);
                 return;
             }
 
@@ -110,7 +111,7 @@ namespace OutOfPhase.Interaction
             _isLocked = false;
 
             if (unlockSound != null)
-                AudioSource.PlayClipAtPoint(unlockSound, transform.position);
+                SFXPlayer.PlayAtPoint(unlockSound, transform.position);
 
             return true;
         }
@@ -129,9 +130,9 @@ namespace OutOfPhase.Interaction
                 _isAnimating = true;
 
                 if (unlockSound != null)
-                    AudioSource.PlayClipAtPoint(unlockSound, transform.position);
+                    SFXPlayer.PlayAtPoint(unlockSound, transform.position);
                 else if (openSound != null)
-                    AudioSource.PlayClipAtPoint(openSound, transform.position);
+                    SFXPlayer.PlayAtPoint(openSound, transform.position);
             }
         }
 
@@ -147,7 +148,7 @@ namespace OutOfPhase.Interaction
                 _isAnimating = true;
 
                 if (closeSound != null)
-                    AudioSource.PlayClipAtPoint(closeSound, transform.position);
+                    SFXPlayer.PlayAtPoint(closeSound, transform.position);
             }
 
             _isLocked = startLocked; // restore original lock state
@@ -162,7 +163,7 @@ namespace OutOfPhase.Interaction
 
             var clip = _isOpen ? openSound : closeSound;
             if (clip != null)
-                AudioSource.PlayClipAtPoint(clip, transform.position);
+                SFXPlayer.PlayAtPoint(clip, transform.position);
         }
 
         private Quaternion GetOpenRotation(Transform player)

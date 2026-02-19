@@ -1,5 +1,6 @@
 using UnityEngine;
 using OutOfPhase.Items;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -39,7 +40,7 @@ namespace OutOfPhase.Interaction
             _opened = true;
 
             if (openSound != null)
-                AudioSource.PlayClipAtPoint(openSound, transform.position);
+                SFXPlayer.PlayAtPoint(openSound, transform.position);
 
             if (openVFXPrefab != null)
             {

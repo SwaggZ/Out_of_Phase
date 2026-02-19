@@ -1,4 +1,6 @@
 using UnityEngine;
+using OutOfPhase.UI;
+using OutOfPhase.Dialogue;
 
 namespace OutOfPhase.Dimension
 {
@@ -18,6 +20,54 @@ namespace OutOfPhase.Dimension
         private AudioSource _source2D;
         private AudioSource[] _pool3D;
         private int _nextPool;
+        private float _sfxVolumeMultiplier = 1f;
+
+        /// <summary>
+        /// Current SFX volume multiplier (0-1).
+        /// </summary>
+        public float SFXVolume => _sfxVolumeMultiplier;
+
+        /// <summary>
+        /// Gets the current SFX volume. Safe to call even if instance isn't ready.
+        /// Returns 0 during dialogue.
+        /// </summary>
+        public static float GetSFXVolume()
+        {
+            // Mute SFX during dialogue
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+            {
+                return 0f;
+            }
+
+            if (Instance != null) return Instance._sfxVolumeMultiplier;
+            if (SettingsManager.Instance != null) return SettingsManager.Instance.Current.sfxVolume;
+            return 1f;
+        }
+
+        /// <summary>
+        /// Set the global SFX volume multiplier. Called by SettingsManager.
+        /// </summary>
+        public void SetSFXVolume(float volume)
+        {
+            _sfxVolumeMultiplier = Mathf.Clamp01(volume);
+        }
+
+        /// <summary>
+        /// Static helper to play a 3D sound using the singleton, with fallback.
+        /// </summary>
+        public static void PlayAtPoint(AudioClip clip, Vector3 position, float volume = 1f)
+        {
+            if (clip == null) return;
+            if (Instance != null)
+            {
+                Instance.Play3D(clip, position, volume);
+            }
+            else
+            {
+                // Fallback: use Unity's built-in with volume multiplier
+                AudioSource.PlayClipAtPoint(clip, position, volume * GetSFXVolume());
+            }
+        }
 
         private void Awake()
         {
@@ -46,7 +96,7 @@ namespace OutOfPhase.Dimension
         public void Play2D(AudioClip clip, float volume = 1f)
         {
             if (clip == null) return;
-            _source2D.PlayOneShot(clip, volume);
+            _source2D.PlayOneShot(clip, volume * _sfxVolumeMultiplier);
         }
 
         /// <summary>
@@ -57,7 +107,7 @@ namespace OutOfPhase.Dimension
             if (clip == null) return;
             AudioSource src = _pool3D[_nextPool];
             src.transform.position = position;
-            src.PlayOneShot(clip, volume);
+            src.PlayOneShot(clip, volume * _sfxVolumeMultiplier);
             _nextPool = (_nextPool + 1) % _pool3D.Length;
         }
 

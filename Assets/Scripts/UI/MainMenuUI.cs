@@ -151,7 +151,7 @@ namespace OutOfPhase.UI
             titleText.fontStyle = FontStyles.Bold;
             titleText.color = accentColor;
             titleText.alignment = TextAlignmentOptions.Center;
-            titleText.enableWordWrapping = false;
+            titleText.textWrappingMode = TextWrappingModes.NoWrap;
 
             // Subtitle
             GameObject subObj = new GameObject("Subtitle");

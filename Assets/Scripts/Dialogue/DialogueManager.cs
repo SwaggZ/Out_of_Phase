@@ -7,6 +7,8 @@ using TMPro;
 using OutOfPhase.Items;
 using OutOfPhase.Interaction;
 using OutOfPhase.Player;
+using OutOfPhase.Dimension;
+using OutOfPhase.Inventory;
 
 namespace OutOfPhase.Dialogue
 {
@@ -67,6 +69,7 @@ namespace OutOfPhase.Dialogue
         private Coroutine _typewriterCoroutine;
         private Transform _npcTransform; // for item drops
         private Action _onDialogueEnd;
+        private DialogueChoice[] _currentChoices; // for item cost consumption
 
         // Input
         private PlayerInputActions _inputActions;
@@ -254,7 +257,7 @@ namespace OutOfPhase.Dialogue
                 charsSinceSound++;
                 if (typeSoundClip != null && charsSinceSound >= typeSoundInterval)
                 {
-                    AudioSource.PlayClipAtPoint(typeSoundClip, Camera.main != null
+                    SFXPlayer.PlayAtPoint(typeSoundClip, Camera.main != null
                         ? Camera.main.transform.position : Vector3.zero, typeSoundVolume);
                     charsSinceSound = 0;
                 }
@@ -282,17 +285,34 @@ namespace OutOfPhase.Dialogue
         {
             _waitingForChoice = true;
             _choicesContainer.SetActive(true);
+            _currentChoices = node.choices;
+
+            var inventory = FindFirstObjectByType<Inventory.Inventory>();
 
             int count = Mathf.Min(node.choices.Length, MaxChoices);
             for (int i = 0; i < MaxChoices; i++)
             {
                 if (i < count)
                 {
+                    var choice = node.choices[i];
                     _choiceButtons[i].gameObject.SetActive(true);
-                    _choiceLabels[i].text = node.choices[i].choiceText;
 
-                    int targetIndex = node.choices[i].targetNodeIndex;
-                    int capturedIndex = targetIndex; // closure capture
+                    // Check if player can afford this choice
+                    bool canAfford = CanAffordChoice(choice, inventory);
+
+                    // Build display text with cost info
+                    string displayText = choice.choiceText;
+                    if (choice.itemCosts != null && choice.itemCosts.Length > 0)
+                    {
+                        string costText = GetCostDisplayText(choice.itemCosts, inventory);
+                        displayText += $" <size=80%><color={(canAfford ? "#90EE90" : "#FF6B6B")}>{costText}</color></size>";
+                    }
+                    _choiceLabels[i].text = displayText;
+
+                    // Enable/disable button based on affordability
+                    _choiceButtons[i].interactable = canAfford;
+
+                    int capturedIndex = i; // closure capture for choice index
                     _choiceButtons[i].onClick.RemoveAllListeners();
                     _choiceButtons[i].onClick.AddListener(() => OnChoiceSelected(capturedIndex));
                 }
@@ -307,11 +327,84 @@ namespace OutOfPhase.Dialogue
             Cursor.visible = true;
         }
 
-        private void OnChoiceSelected(int targetNodeIndex)
+        /// <summary>
+        /// Checks if the player has all required items for a dialogue choice.
+        /// </summary>
+        private bool CanAffordChoice(DialogueChoice choice, Inventory.Inventory inventory)
+        {
+            if (inventory == null) return true;
+
+            // Check required items (must have but not consumed)
+            if (choice.requiredItems != null)
+            {
+                foreach (var req in choice.requiredItems)
+                {
+                    if (req.item != null && !inventory.HasItem(req.item, req.quantity))
+                        return false;
+                }
+            }
+
+            // Check item costs (must have and will be consumed)
+            if (choice.itemCosts != null)
+            {
+                foreach (var cost in choice.itemCosts)
+                {
+                    if (cost.item != null && !inventory.HasItem(cost.item, cost.quantity))
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Builds a display string showing item costs.
+        /// </summary>
+        private string GetCostDisplayText(ItemCost[] costs, Inventory.Inventory inventory)
+        {
+            if (costs == null || costs.Length == 0) return "";
+
+            var parts = new System.Collections.Generic.List<string>();
+            foreach (var cost in costs)
+            {
+                if (cost.item == null) continue;
+                int have = inventory != null ? inventory.GetItemCount(cost.item) : 0;
+                parts.Add($"[{have}/{cost.quantity} {cost.item.ItemName}]");
+            }
+
+            return string.Join(" ", parts);
+        }
+
+        private void OnChoiceSelected(int choiceIndex)
         {
             _waitingForChoice = false;
             _choicesContainer.SetActive(false);
 
+            if (_currentChoices == null || choiceIndex < 0 || choiceIndex >= _currentChoices.Length)
+            {
+                EndDialogue();
+                return;
+            }
+
+            var choice = _currentChoices[choiceIndex];
+
+            // Consume item costs
+            if (choice.itemCosts != null && choice.itemCosts.Length > 0)
+            {
+                var inventory = FindFirstObjectByType<Inventory.Inventory>();
+                if (inventory != null)
+                {
+                    foreach (var cost in choice.itemCosts)
+                    {
+                        if (cost.item != null && cost.quantity > 0)
+                        {
+                            inventory.RemoveItem(cost.item, cost.quantity);
+                        }
+                    }
+                }
+            }
+
+            int targetNodeIndex = choice.targetNodeIndex;
             if (targetNodeIndex < 0)
             {
                 EndDialogue();
@@ -488,7 +581,7 @@ namespace OutOfPhase.Dialogue
             _speakerText.fontStyle = FontStyles.Bold;
             _speakerText.color = speakerColor;
             _speakerText.alignment = TextAlignmentOptions.TopLeft;
-            _speakerText.enableWordWrapping = false;
+            _speakerText.textWrappingMode = TextWrappingModes.NoWrap;
             _speakerText.overflowMode = TextOverflowModes.Ellipsis;
 
             // Body text — below speaker
@@ -503,7 +596,7 @@ namespace OutOfPhase.Dialogue
             _bodyText.fontSize = 20;
             _bodyText.color = textColor;
             _bodyText.alignment = TextAlignmentOptions.TopLeft;
-            _bodyText.enableWordWrapping = true;
+            _bodyText.textWrappingMode = TextWrappingModes.Normal;
             _bodyText.overflowMode = TextOverflowModes.Overflow;
 
             // Continue hint — bottom-right
@@ -577,7 +670,7 @@ namespace OutOfPhase.Dialogue
                 labelTmp.fontSize = 18;
                 labelTmp.color = choiceTextColor;
                 labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
-                labelTmp.enableWordWrapping = true;
+                labelTmp.textWrappingMode = TextWrappingModes.Normal;
 
                 _choiceButtons[i] = btn;
                 _choiceLabels[i] = labelTmp;

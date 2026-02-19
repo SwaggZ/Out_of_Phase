@@ -44,9 +44,7 @@ MonoBehaviour:
       No
       blood pooling.
 
-      No defensive wounds.
-
-      Hands relaxed at the sides.'
+      No defensive wounds.'
     choices: []
     nextNodeIndex: 4
     itemRewards: []

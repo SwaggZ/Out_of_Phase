@@ -135,7 +135,7 @@ namespace OutOfPhase.Quest
             tmp.fontSize = 16;
             tmp.color = activeTextColor;
             tmp.alignment = TextAlignmentOptions.Left;
-            tmp.enableWordWrapping = true;
+            tmp.textWrappingMode = TextWrappingModes.Normal;
             tmp.overflowMode = TextOverflowModes.Ellipsis;
             tmp.margin = new Vector4(4, 0, 4, 0);
 

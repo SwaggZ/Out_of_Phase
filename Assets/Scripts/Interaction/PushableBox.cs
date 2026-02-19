@@ -52,7 +52,7 @@ namespace OutOfPhase.Interaction
             gameObject.SetActive(false);
 
             if (pickupSound != null)
-                AudioSource.PlayClipAtPoint(pickupSound, transform.position, soundVolume);
+                SFXPlayer.PlayAtPoint(pickupSound, transform.position, soundVolume);
         }
 
         /// <summary>Place this box at a world position (shows it again).</summary>
@@ -64,7 +64,7 @@ namespace OutOfPhase.Interaction
             _carriedBox = null;
 
             if (pickupSound != null)
-                AudioSource.PlayClipAtPoint(pickupSound, position, soundVolume);
+                SFXPlayer.PlayAtPoint(pickupSound, position, soundVolume);
 
             // Kill any physics velocity
             var rb = GetComponent<Rigidbody>();

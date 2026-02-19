@@ -16,7 +16,9 @@ namespace OutOfPhase.Dimension
 
         [Header("Transition")]
         [Tooltip("Blend time between skyboxes (only for procedural skyboxes).")]
+        #pragma warning disable CS0414 // Reserved for procedural skybox blending
         [SerializeField] private float blendDuration = 1.5f;
+        #pragma warning restore CS0414
 
         [Header("Fog per Dimension")]
         [SerializeField] private bool changeFog = true;

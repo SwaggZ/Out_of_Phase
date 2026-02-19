@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: be696ebaf6194104a9a92f77fdcfc2d0
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 360604
+  packageName: "[FreeTrial] Riftbreaker - Stylized Fantasy Monster (Rig + Anim) \u2013
+    PixeliusVita"
+  packageVersion: 1.0
+  assetPath: Assets/Stylized3DMonster/ShaderMaster/MonsterCelShaderLowest.shader
+  uploadId: 859690

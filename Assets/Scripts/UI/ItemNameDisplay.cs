@@ -192,7 +192,7 @@ namespace OutOfPhase.UI
             _nameText.fontSize = fontSize;
             _nameText.color = textColor;
             _nameText.alignment = TextAlignmentOptions.Center;
-            _nameText.enableWordWrapping = false;
+            _nameText.textWrappingMode = TextWrappingModes.NoWrap;
             _nameText.overflowMode = TextOverflowModes.Overflow;
 
             // Drop shadow for readability

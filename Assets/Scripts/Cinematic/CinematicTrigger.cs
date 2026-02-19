@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Cinematic
 {
@@ -49,7 +50,7 @@ namespace OutOfPhase.Cinematic
             _hasPlayed = true;
 
             if (triggerSound != null)
-                AudioSource.PlayClipAtPoint(triggerSound, transform.position, triggerSoundVolume);
+                SFXPlayer.PlayAtPoint(triggerSound, transform.position, triggerSoundVolume);
 
             if (startDelay > 0f)
                 StartCoroutine(DelayedPlay());

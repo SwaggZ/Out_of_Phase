@@ -190,7 +190,7 @@ namespace OutOfPhase.Dimension
             // Stinger
             if (!immediate && profile.transitionStinger != null && _stingerSource != null)
             {
-                _stingerSource.PlayOneShot(profile.transitionStinger, profile.stingerVolume);
+                _stingerSource.PlayOneShot(profile.transitionStinger, profile.stingerVolume * SFXPlayer.GetSFXVolume());
             }
 
             // Mixer snapshot

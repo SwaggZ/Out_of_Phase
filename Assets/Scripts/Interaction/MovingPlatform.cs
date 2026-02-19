@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -100,7 +101,15 @@ namespace OutOfPhase.Interaction
 
             // Audio
             if (_audioSource != null && !_audioSource.isPlaying && _waitTimer <= 0f)
+            {
+                _audioSource.volume = moveVolume * SFXPlayer.GetSFXVolume();
                 _audioSource.Play();
+            }
+            else if (_audioSource != null && _audioSource.isPlaying)
+            {
+                // Update volume in case settings changed
+                _audioSource.volume = moveVolume * SFXPlayer.GetSFXVolume();
+            }
         }
 
         private float SmoothStep(float t)

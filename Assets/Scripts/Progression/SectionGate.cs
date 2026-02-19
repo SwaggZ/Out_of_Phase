@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Progression
 {
@@ -54,7 +55,7 @@ namespace OutOfPhase.Progression
 
             // Play sound
             if (gateCrossSound != null)
-                AudioSource.PlayClipAtPoint(gateCrossSound, transform.position, gateSoundVolume);
+                SFXPlayer.PlayAtPoint(gateCrossSound, transform.position, gateSoundVolume);
 
             // Play cinematic if assigned
             if (gateInCinematic != null && Cinematic.CinematicManager.Instance != null)

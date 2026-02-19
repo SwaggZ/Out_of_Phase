@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351c556cfc2e4e34ea5cde2fa00b3a77, type: 3}
   m_Name: Section3.1
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
-  questId: 
+  questId: 3.1
   title: Find a way to pass the crowd
   description: Maybe a pickaxe can be useful?
   questType: 1

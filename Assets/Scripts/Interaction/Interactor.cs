@@ -5,6 +5,7 @@ using OutOfPhase.Player;
 using OutOfPhase.Inventory;
 using OutOfPhase.Items;
 using OutOfPhase.Items.ToolActions;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -309,11 +310,11 @@ namespace OutOfPhase.Interaction
                             // Play swing sound (whoosh), then hit sound
                             if (action.SwingSound != null)
                             {
-                                AudioSource.PlayClipAtPoint(action.SwingSound, _currentHit.point, 0.6f);
+                                SFXPlayer.PlayAtPoint(action.SwingSound, _currentHit.point, 0.6f);
                             }
                             if (action.UseSound != null)
                             {
-                                AudioSource.PlayClipAtPoint(action.UseSound, _currentHit.point);
+                                SFXPlayer.PlayAtPoint(action.UseSound, _currentHit.point);
                             }
                             
                             OnToolUsed?.Invoke(_currentTarget, action);

@@ -1,5 +1,6 @@
 using UnityEngine;
 using OutOfPhase.Inventory;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Interaction
 {
@@ -69,7 +70,7 @@ namespace OutOfPhase.Interaction
                 // Play sound
                 if (pickupSound != null)
                 {
-                    AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+                    SFXPlayer.PlayAtPoint(pickupSound, transform.position);
                 }
                 
                 if (remaining > 0)

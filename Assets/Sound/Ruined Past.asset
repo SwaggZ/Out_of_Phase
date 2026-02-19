@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf5fcdb509423674ba81721d8c232aaa, type: 3}
   m_Name: Ruined Past
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionAudioProfile
-  musicLoop: {fileID: 8300000, guid: e68995eb0c09fbf48a64404745f91997, type: 3}
+  musicLoop: {fileID: 8300000, guid: 5f39dfddc6b27534d98ef1fc05e0d003, type: 3}
   musicVolume: 1
   ambienceLoop: {fileID: 8300000, guid: b31fbb6ebb69d634e8387e769958a718, type: 3}
   ambienceVolume: 1

@@ -1,5 +1,6 @@
 using UnityEngine;
 using OutOfPhase.Interaction;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Items.ToolActions
 {
@@ -43,7 +44,7 @@ namespace OutOfPhase.Items.ToolActions
                         var sound = unlockSound != null ? unlockSound : GetRandomClip(useSounds);
                         if (sound != null)
                         {
-                            AudioSource.PlayClipAtPoint(sound, hit.point);
+                            SFXPlayer.PlayAtPoint(sound, hit.point);
                         }
                         
                         Debug.Log($"Unlocked with key: {keyItem.KeyId}");
@@ -53,7 +54,7 @@ namespace OutOfPhase.Items.ToolActions
                         // Wrong key
                         if (failSound != null)
                         {
-                            AudioSource.PlayClipAtPoint(failSound, hit.point);
+                            SFXPlayer.PlayAtPoint(failSound, hit.point);
                         }
                         Debug.Log($"Key {keyItem.KeyId} doesn't fit lock {keyTarget.LockId}");
                     }

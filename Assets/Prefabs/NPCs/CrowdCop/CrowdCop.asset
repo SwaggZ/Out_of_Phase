@@ -25,12 +25,13 @@ MonoBehaviour:
     nextNodeIndex: 2
     itemRewards: []
   - speakerNameOverride: Crowd Cop
-    text: Luckily, we've added a dimensional shifter to your watch.
+    text: Luckily, the tech team added a dimensional shifter to your watch so you
+      can solve this case
     choices: []
     nextNodeIndex: 3
     itemRewards: []
   - speakerNameOverride: Crowd Cop
-    text: Just press the Tab button on your watch to access dimensions shifting
+    text: Just press the Tab button on your watch to access the dimensional shifter
     choices: []
     nextNodeIndex: -1
     itemRewards: []

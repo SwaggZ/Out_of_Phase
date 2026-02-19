@@ -1,4 +1,5 @@
 using UnityEngine;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Items.ToolActions
 {
@@ -64,7 +65,7 @@ namespace OutOfPhase.Items.ToolActions
                     {
                         var clip = GetRandomClip(useSounds);
                         if (clip != null)
-                            AudioSource.PlayClipAtPoint(clip, hit.point);
+                            SFXPlayer.PlayAtPoint(clip, hit.point);
                     }
                     
                     return success;
@@ -82,7 +83,7 @@ namespace OutOfPhase.Items.ToolActions
             var eqClip = GetRandomClip(equipSounds);
             if (eqClip != null && context.PlayerTransform != null)
             {
-                AudioSource.PlayClipAtPoint(eqClip, context.PlayerTransform.position, 0.5f);
+                SFXPlayer.PlayAtPoint(eqClip, context.PlayerTransform.position, 0.5f);
             }
 
             Transform lightParent = context.CameraTransform;

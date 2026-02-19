@@ -1,4 +1,6 @@
 using UnityEngine;
+using OutOfPhase.UI;
+using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Player
 {
@@ -45,6 +47,12 @@ namespace OutOfPhase.Player
         private float _stepTimer;
         private bool _wasGrounded;
         private float _lastTimeScale;
+        private bool _initialized;
+
+        /// <summary>
+        /// Gets the current SFX volume multiplier from settings.
+        /// </summary>
+        private float SFXVolume => SFXPlayer.GetSFXVolume();
 
         private void Awake()
         {
@@ -62,12 +70,38 @@ namespace OutOfPhase.Player
             _lastTimeScale = Time.timeScale;
         }
 
+        private void Start()
+        {
+            // Initialize grounded state to prevent false landing sound on first frame
+            _wasGrounded = _movement.IsGrounded;
+            _initialized = true;
+        }
+
+        private void OnEnable()
+        {
+            // Sync grounded state when re-enabled to prevent false landing sounds
+            if (_initialized && _movement != null)
+            {
+                _wasGrounded = _movement.IsGrounded;
+            }
+        }
+
         private void Update()
         {
+            // Skip if not initialized yet
+            if (!_initialized) return;
+
             // If the game was paused last frame and just resumed, sync grounded state
             // without playing the landing SFX (the player didn't actually fall).
-            bool justResumed = _lastTimeScale == 0f && Time.timeScale > 0f;
+            bool wasPaused = _lastTimeScale == 0f;
+            bool justResumed = wasPaused && Time.timeScale > 0f;
             _lastTimeScale = Time.timeScale;
+
+            // Also skip entirely while paused
+            if (Time.timeScale == 0f)
+            {
+                return;
+            }
 
             if (justResumed)
             {
@@ -112,7 +146,7 @@ namespace OutOfPhase.Player
         {
             if (jumpClip == null) return;
             _source.pitch = Random.Range(minPitch, maxPitch);
-            _source.PlayOneShot(jumpClip, jumpVolume);
+            _source.PlayOneShot(jumpClip, jumpVolume * SFXVolume);
         }
 
         private void PlayFootstep()
@@ -122,14 +156,14 @@ namespace OutOfPhase.Player
             AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
             float vol = _movement.IsSprinting ? sprintVolume : walkVolume;
             _source.pitch = Random.Range(minPitch, maxPitch);
-            _source.PlayOneShot(clip, vol);
+            _source.PlayOneShot(clip, vol * SFXVolume);
         }
 
         private void PlayLand()
         {
             if (landClip == null) return;
             _source.pitch = Random.Range(minPitch, maxPitch);
-            _source.PlayOneShot(landClip, landVolume);
+            _source.PlayOneShot(landClip, landVolume * SFXVolume);
         }
     }
 }

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77c2816abff6ba04bae4a0503c6670ef, type: 3}
+  m_Name: WelcomToHell
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Items.KeyItemDefinition
+  itemId: key
+  itemName: The Ravine
+  description: This key unlocks the door to the rooftop ladder
+  icon: {fileID: 21300000, guid: 58686b686c15b5344b9171a1b1f1858b, type: 3}
+  worldPrefab: {fileID: 5433465296886476256, guid: da6f758e24545964ca7dc4ea1a0ecf8e, type: 3}
+  heldPrefab: {fileID: 5433465296886476256, guid: da6f758e24545964ca7dc4ea1a0ecf8e, type: 3}
+  isStackable: 0
+  maxStackSize: 1
+  hasDurability: 0
+  maxDurability: 100
+  toolActions:
+  - {fileID: 11400000, guid: ddfa7d1eaae970344850949ea9fa769c, type: 2}
+  category: 2
+  keyId: WelcomToHell
+  isMasterKey: 0
+  consumeOnUse: 1
+  unlocksDescription: 

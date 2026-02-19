@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: Second Tear
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: You
+  nodes:
+  - speakerNameOverride: You
+    text: "\u2026No."
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "That\u2019s not like the others."
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: You
+    text: 'The past was silent.
+
+      The overgrown world was abandoned.'
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "This\u2014"
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: You
+    text: This is alive.
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "The tear isn\u2019t thin. It\u2019s pulsing. Breathing like a wound that
+      won\u2019t close."
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "I can see fire through it. Not natural flame \u2014 something deeper.
+      The sky on the other side isn\u2019t a sky. It\u2019s a furnace."
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Structures\u2026 twisted. Spiked. Like the world was rebuilt by something
+      that hates symmetry."
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+  - speakerNameOverride: You
+    text: I can hear it.
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Not wind.
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Screaming metal. Distant roars. Something dragging across stone.
+    choices: []
+    nextNodeIndex: 11
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Screaming metal. Distant roars. Something dragging across stone.
+    choices: []
+    nextNodeIndex: 12
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Screaming metal. Distant roars. Something dragging across stone.
+    choices: []
+    nextNodeIndex: 13
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Like the fabric tore \u2014 and something started rotting it from within."
+    choices: []
+    nextNodeIndex: 14
+    itemRewards: []
+  - speakerNameOverride: You
+    text: The equations never mentioned contamination.
+    choices: []
+    nextNodeIndex: 15
+    itemRewards: []
+  - speakerNameOverride: You
+    text: A dimension where this is normal.
+    choices: []
+    nextNodeIndex: 16
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Where the ground glows and the air tastes like ash.
+    choices: []
+    nextNodeIndex: 17
+    itemRewards: []
+  - speakerNameOverride: You
+    text: The theories said alternate realities would branch from ours.
+    choices: []
+    nextNodeIndex: 18
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "If that\u2019s true\u2026"
+    choices: []
+    nextNodeIndex: 19
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Then somewhere in the spectrum\u2014"
+    choices: []
+    nextNodeIndex: 20
+    itemRewards: []
+  - speakerNameOverride: You
+    text: This world won.
+    choices: []
+    nextNodeIndex: 21
+    itemRewards: []
+  - speakerNameOverride: You
+    text: This world won.
+    choices: []
+    nextNodeIndex: 21
+    itemRewards: []
