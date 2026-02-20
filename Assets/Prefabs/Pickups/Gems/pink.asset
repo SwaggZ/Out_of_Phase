@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77c2816abff6ba04bae4a0503c6670ef, type: 3}
+  m_Name: pink
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Items.KeyItemDefinition
+  itemId: Pink Gem
+  itemName: Pink Gem
+  description: Hell Gem 1
+  icon: {fileID: 21300000, guid: b4daa0e52c1ea294aaf96f53c114ea8d, type: 3}
+  worldPrefab: {fileID: 2038565842611881946, guid: 25528b1b08d54fa4f85bbd8278e16432, type: 3}
+  heldPrefab: {fileID: 2038565842611881946, guid: 25528b1b08d54fa4f85bbd8278e16432, type: 3}
+  isStackable: 0
+  maxStackSize: 1
+  hasDurability: 0
+  maxDurability: 100
+  toolActions:
+  - {fileID: 11400000, guid: ddfa7d1eaae970344850949ea9fa769c, type: 2}
+  category: 0
+  keyId: key_pink
+  isMasterKey: 0
+  consumeOnUse: 0
+  unlocksDescription: 

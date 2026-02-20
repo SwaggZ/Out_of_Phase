@@ -1,5 +1,6 @@
 using UnityEngine;
 using OutOfPhase.Dimension;
+using OutOfPhase.Items;
 
 namespace OutOfPhase.Interaction
 {
@@ -12,6 +13,9 @@ namespace OutOfPhase.Interaction
         [Header("Identity")]
         [Tooltip("Display name shown in interaction prompt.")]
         [SerializeField] private string boxName = "Box";
+
+        [Tooltip("Optional: Item this box represents for quest tracking (e.g., a gem).")]
+        [SerializeField] private ItemDefinition questItem;
 
         [Header("Dimension")]
         [Tooltip("If true, the box switches to the player's current dimension when placed.")]
@@ -53,6 +57,12 @@ namespace OutOfPhase.Interaction
 
             if (pickupSound != null)
                 SFXPlayer.PlayAtPoint(pickupSound, transform.position, soundVolume);
+
+            // Notify quest system if this box represents a quest item
+            if (questItem != null && Quest.QuestManager.Instance != null)
+            {
+                Quest.QuestManager.Instance.NotifyItemFound(questItem);
+            }
         }
 
         /// <summary>Place this box at a world position (shows it again).</summary>

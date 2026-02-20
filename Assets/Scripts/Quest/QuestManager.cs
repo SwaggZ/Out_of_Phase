@@ -19,6 +19,9 @@ namespace OutOfPhase.Quest
         private readonly List<QuestDefinition> _activeQuests = new List<QuestDefinition>();
         private readonly HashSet<string> _completedQuestIds = new HashSet<string>();
 
+        // ── Found items tracking (for pushable boxes, etc.) ────
+        private readonly Dictionary<ItemDefinition, int> _foundItems = new Dictionary<ItemDefinition, int>();
+
         // ── Events ─────────────────────────────────────────────
         /// <summary>Fired when the active quest list changes (quest added or completed).</summary>
         public event Action OnQuestListChanged;
@@ -183,6 +186,7 @@ namespace OutOfPhase.Quest
         {
             _activeQuests.Clear();
             _completedQuestIds.Clear();
+            ClearFoundItems();
             OnQuestListChanged?.Invoke();
         }
 
@@ -284,8 +288,44 @@ namespace OutOfPhase.Quest
         private void OnItemAdded(int slotIndex, ItemDefinition item, int quantity)
         {
             // Check all active FindItem quests
+            CheckFindItemQuests();
+        }
+
+        /// <summary>
+        /// Called when the player "finds" an item via a pushable box or other interaction
+        /// that doesn't add to inventory but should count toward quest progress.
+        /// </summary>
+        public void NotifyItemFound(ItemDefinition item)
+        {
+            if (item == null) return;
+
+            if (_foundItems.TryGetValue(item, out int count))
+                _foundItems[item] = count + 1;
+            else
+                _foundItems[item] = 1;
+
+            Debug.Log($"[Quest] Item found: {item.ItemName} (total found: {_foundItems[item]})");
+
+            // Check if this completes any FindItem quests
+            CheckFindItemQuests();
+        }
+
+        /// <summary>
+        /// Gets the count of a specific item found via pushable boxes etc.
+        /// </summary>
+        public int GetFoundItemCount(ItemDefinition item)
+        {
+            if (item == null) return 0;
+            return _foundItems.TryGetValue(item, out int count) ? count : 0;
+        }
+
+        /// <summary>
+        /// Check all active FindItem quests for completion.
+        /// Counts both inventory items and items found via pushable boxes.
+        /// </summary>
+        private void CheckFindItemQuests()
+        {
             var inventory = FindFirstObjectByType<Inventory.Inventory>();
-            if (inventory == null) return;
 
             for (int i = _activeQuests.Count - 1; i >= 0; i--)
             {
@@ -294,8 +334,16 @@ namespace OutOfPhase.Quest
                 if (!quest.autoComplete) continue;
                 if (quest.targetItem == null) continue;
 
-                int count = inventory.GetItemCount(quest.targetItem);
-                if (count >= quest.targetItemCount)
+                // Count items in inventory
+                int inventoryCount = inventory != null ? inventory.GetItemCount(quest.targetItem) : 0;
+
+                // Count items found via pushable boxes etc.
+                int foundCount = GetFoundItemCount(quest.targetItem);
+
+                // Total count for quest progress
+                int totalCount = inventoryCount + foundCount;
+
+                if (totalCount >= quest.targetItemCount)
                 {
                     CompleteQuest(quest.Id);
                 }
@@ -310,15 +358,23 @@ namespace OutOfPhase.Quest
             if (quest.questType == QuestType.FindItem && quest.targetItem != null)
             {
                 var inventory = FindFirstObjectByType<Inventory.Inventory>();
-                if (inventory != null)
+                int inventoryCount = inventory != null ? inventory.GetItemCount(quest.targetItem) : 0;
+                int foundCount = GetFoundItemCount(quest.targetItem);
+                int totalCount = inventoryCount + foundCount;
+
+                if (totalCount >= quest.targetItemCount)
                 {
-                    int count = inventory.GetItemCount(quest.targetItem);
-                    if (count >= quest.targetItemCount)
-                    {
-                        CompleteQuest(quest.Id);
-                    }
+                    CompleteQuest(quest.Id);
                 }
             }
+        }
+
+        /// <summary>
+        /// Clear found items tracking (used on new game).
+        /// </summary>
+        public void ClearFoundItems()
+        {
+            _foundItems.Clear();
         }
     }
 }

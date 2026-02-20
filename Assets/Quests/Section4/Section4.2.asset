@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Section4.2
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
   questId: 4.2
-  title: Find a heavy box
+  title: Find a heavy rock
   description: Maybe its not here?
   questType: 2
   targetNPCName: 

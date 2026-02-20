@@ -241,6 +241,36 @@ namespace OutOfPhase.Dimension
             return true;
         }
 
+        /// <summary>
+        /// Absolutely forces a switch to a dimension, ignoring ALL locks and restrictions.
+        /// Use for teleporters that need to guarantee the dimension changes.
+        /// </summary>
+        public bool AbsoluteForceSwitchToDimension(int targetDimension)
+        {
+            if (targetDimension < 0 || targetDimension >= dimensionCount)
+            {
+                Debug.LogWarning($"[DimensionManager] AbsoluteForce failed: dimension {targetDimension} out of range (0-{dimensionCount - 1})");
+                return false;
+            }
+
+            if (targetDimension == _currentDimension)
+            {
+                Debug.Log($"[DimensionManager] AbsoluteForce: already in dimension {targetDimension}");
+                return true;
+            }
+
+            // If transitioning, stop the current transition
+            if (_isTransitioning)
+            {
+                StopAllCoroutines();
+                _isTransitioning = false;
+            }
+
+            Debug.Log($"[DimensionManager] AbsoluteForce switching from {_currentDimension} to {targetDimension}");
+            StartCoroutine(TransitionToDimension(targetDimension));
+            return true;
+        }
+
         private System.Collections.IEnumerator TransitionToDimension(int targetDimension)
         {
             int oldDimension = _currentDimension;
