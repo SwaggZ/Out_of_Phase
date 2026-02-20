@@ -44,6 +44,10 @@ namespace OutOfPhase.Dialogue
         [Tooltip("Items given to the player when this node is reached")]
         public ItemReward[] itemRewards;
 
+        [Header("Events")]
+        [Tooltip("Trigger ID fired when this node is reached. Scene objects can listen for this via DialogueManager.OnNodeTrigger event.")]
+        public string triggerID = "";
+
         /// <summary>True if this node presents choices to the player.</summary>
         public bool HasChoices => choices != null && choices.Length > 0;
     }

@@ -83,6 +83,9 @@ namespace OutOfPhase.Dialogue
         /// <summary>Fired when dialogue ends.</summary>
         public event Action OnDialogueEnded;
 
+        /// <summary>Fired when a dialogue node with a triggerID is reached. Args: triggerID string.</summary>
+        public event Action<string> OnNodeTrigger;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -219,6 +222,12 @@ namespace OutOfPhase.Dialogue
                         SpawnItemReward(reward);
                     }
                 }
+            }
+
+            // Fire node trigger event if triggerID is set
+            if (!string.IsNullOrEmpty(node.triggerID))
+            {
+                OnNodeTrigger?.Invoke(node.triggerID);
             }
 
             // Start typewriter

@@ -189,6 +189,21 @@ namespace OutOfPhase.Progression
                     sec.CheckpointSpawnPoint.eulerAngles.x);
         }
 
+        /// <summary>
+        /// Enables all sections at once. Useful for sequences that need to 
+        /// teleport the player across the entire map (e.g., ending phasing sequence).
+        /// </summary>
+        public void EnableAllSections()
+        {
+            if (sections == null) return;
+
+            for (int i = 0; i < sections.Length; i++)
+            {
+                if (sections[i].SectionRoot != null)
+                    sections[i].SectionRoot.SetActive(true);
+            }
+        }
+
         private void ActivateSection(int index)
         {
             if (sections == null) return;

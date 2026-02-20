@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: Phase1
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: You
+  nodes:
+  - speakerNameOverride: You
+    text: So this is where it all converges.
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+  - speakerNameOverride: You
+    text: 'No sky.
+
+      No ground that stays still.'
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Just fragments of everything \u2014 past stone, future glass, overgrown
+      roots, corrupted iron \u2014 all suspended like a broken equation."
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "This isn\u2019t a dimension."
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "It\u2019s overlap."
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "Every tear I\u2019ve seen\u2026 they don\u2019t just connect places."
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+  - speakerNameOverride: You
+    text: They feed into this.
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+  - speakerNameOverride: You
+    text: The device is reacting.
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Not unstable.
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Resonant.
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+  - speakerNameOverride: You
+    text: Like it recognizes home.
+    choices: []
+    nextNodeIndex: 11
+    itemRewards: []
+  - speakerNameOverride: You
+    text: No.
+    choices: []
+    nextNodeIndex: 12
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "No, that\u2019s not possible."
+    choices: []
+    nextNodeIndex: 13
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "I\u2019m leaving!"
+    choices: []
+    nextNodeIndex: 14
+    itemRewards: []
+  - speakerNameOverride: You
+    text: "One phase back to the Future and this\u2014"
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []

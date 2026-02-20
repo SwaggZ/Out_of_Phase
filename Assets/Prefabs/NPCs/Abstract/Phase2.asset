@@ -1,0 +1,367 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45237984997d1be4295c232d093a5e65, type: 3}
+  m_Name: Phase2
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dialogue.DialogueData
+  defaultSpeakerName: You
+  nodes:
+  - speakerNameOverride: You
+    text: Same platform.
+    choices: []
+    nextNodeIndex: 1
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Same fractured horizon.
+    choices: []
+    nextNodeIndex: 2
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Every jump was different.
+    choices: []
+    nextNodeIndex: 3
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Different rooftops. Different streets. Different angles of the corrupted
+      sky.
+    choices: []
+    nextNodeIndex: 4
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "But every single time\u2014"
+    choices: []
+    nextNodeIndex: 5
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: It snapped me back here.
+    choices: []
+    nextNodeIndex: 6
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "This isn\u2019t random displacement."
+    choices: []
+    nextNodeIndex: 7
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: This is a return point.
+    choices: []
+    nextNodeIndex: 8
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "The Abstract isn\u2019t trapping me."
+    choices: []
+    nextNodeIndex: 9
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "It\u2019s anchoring me."
+    choices: []
+    nextNodeIndex: 10
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: ...
+    choices: []
+    nextNodeIndex: 11
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: The first tear.
+    choices: []
+    nextNodeIndex: 12
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: The alley.
+    choices: []
+    nextNodeIndex: 13
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: The body.
+    choices: []
+    nextNodeIndex: 14
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: The distortion was perfectly centered.
+    choices: []
+    nextNodeIndex: 15
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Not chaotic.
+    choices: []
+    nextNodeIndex: 16
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Not spreading.
+    choices: []
+    nextNodeIndex: 17
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Precise.
+    choices: []
+    nextNodeIndex: 18
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: I thought the tear killed him.
+    choices: []
+    nextNodeIndex: 19
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "But the tear wasn\u2019t there until I activated the device."
+    choices: []
+    nextNodeIndex: 20
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "It didn\u2019t react."
+    choices: []
+    nextNodeIndex: 21
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: It created.
+    choices: []
+    nextNodeIndex: 22
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Right where I stood.
+    choices: []
+    nextNodeIndex: 23
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Right on him.
+    choices: []
+    nextNodeIndex: 24
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "I wasn\u2019t investigating a dimensional breach."
+    choices: []
+    nextNodeIndex: 25
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: I caused the first one.
+    choices: []
+    nextNodeIndex: 26
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "And the corrupted world\u2026"
+    choices: []
+    nextNodeIndex: 27
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Those figures running through portals.
+    choices: []
+    nextNodeIndex: 28
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: I thought they were invaders.
+    choices: []
+    nextNodeIndex: 29
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: They... were me...
+    choices: []
+    nextNodeIndex: 30
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Different timelines.
+    choices: []
+    nextNodeIndex: 31
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Different attempts to shut this down.
+    choices: []
+    nextNodeIndex: 32
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: All dragged back here.
+    choices: []
+    nextNodeIndex: 33
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "The Abstract isn\u2019t a dimension."
+    choices: []
+    nextNodeIndex: 34
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "It\u2019s the scar left by overlapping tears."
+    choices: []
+    nextNodeIndex: 35
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: By repeated escapes.
+    choices: []
+    nextNodeIndex: 36
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: By one malfunction echoing across realities.
+    choices: []
+    nextNodeIndex: 37
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "And I\u2019m the constant."
+    choices: []
+    nextNodeIndex: 38
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: All dragged back here.
+    choices: []
+    nextNodeIndex: 39
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: So now there are only two outcomes.
+    choices: []
+    nextNodeIndex: 40
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "Destroy the device\u2014"
+    choices: []
+    nextNodeIndex: 41
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: The anchor collapses.
+    choices: []
+    nextNodeIndex: 42
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: The Abstract folds in on itself.
+    choices: []
+    nextNodeIndex: 43
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: All tears seal.
+    choices: []
+    nextNodeIndex: 44
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Every other dimension survives.
+    choices: []
+    nextNodeIndex: 45
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: And I disappear with it.
+    choices: []
+    nextNodeIndex: 46
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: "Or\u2014"
+    choices: []
+    nextNodeIndex: 47
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Keep it active.
+    choices: []
+    nextNodeIndex: 48
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Let the Abstract stabilize.
+    choices: []
+    nextNodeIndex: 49
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Let it overwrite the spectrum.
+    choices: []
+    nextNodeIndex: 50
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Past. Overgrown. Corrupted. Future.
+    choices: []
+    nextNodeIndex: 51
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: All consumed.
+    choices: []
+    nextNodeIndex: 52
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: And I live.
+    choices: []
+    nextNodeIndex: 53
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Alone.
+    choices: []
+    nextNodeIndex: 54
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: Keep it active.
+    choices:
+    - choiceText: Destroy the device
+      targetNodeIndex: 55
+      requiredItems: []
+      itemCosts: []
+    - choiceText: Keep it active
+      targetNodeIndex: 56
+      requiredItems: []
+      itemCosts: []
+    nextNodeIndex: 0
+    itemRewards: []
+    triggerID: 
+  - speakerNameOverride: You
+    text: 
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []
+    triggerID: TriggerDestroyEnding()
+  - speakerNameOverride: You
+    text: 
+    choices: []
+    nextNodeIndex: -1
+    itemRewards: []
+    triggerID: TriggerKeepEnding()
