@@ -134,6 +134,9 @@ namespace OutOfPhase.Dimension
         private PlayerLook _playerLook;
         private CanvasGroup _flashOverlay;
         private CanvasGroup _fadeOverlay;
+        private Transform _originalParent;
+        private Transform _persistentRoot;
+        private bool _isPinnedToPersistentRoot;
 
         // IInteractable
         public string InteractionPrompt => interactionPrompt;
@@ -170,6 +173,7 @@ namespace OutOfPhase.Dimension
             if (!CanInteract) return;
 
             hasBeenTriggered = true;
+            PinToPersistentRoot();
             StartCoroutine(EndingSequence());
         }
 
@@ -284,7 +288,13 @@ namespace OutOfPhase.Dimension
             if (_playerCamera != null)
                 _playerCamera.enabled = false;
             if (endingCamera != null)
+            {
+                if (!endingCamera.gameObject.activeSelf)
+                    endingCamera.gameObject.SetActive(true);
                 endingCamera.enabled = true;
+                if (!endingCamera.gameObject.activeInHierarchy)
+                    Debug.LogWarning("[WhiteHoleCore] Ending camera is still inactive in hierarchy. Check parent GameObjects.");
+            }
 
             // Play collapse sound
             if (collapseSound != null)
@@ -360,6 +370,7 @@ namespace OutOfPhase.Dimension
             yield return StartCoroutine(FadeToBlack(fadeToBlackDuration));
 
             OnEndingComplete?.Invoke();
+            RestoreOriginalParent();
             Debug.Log("[WhiteHoleCore] Destroy Device ending complete. Player saved all dimensions.");
         }
 
@@ -408,7 +419,43 @@ namespace OutOfPhase.Dimension
             yield return StartCoroutine(FadeToColor(abstractColor, 2f));
 
             OnEndingComplete?.Invoke();
+            RestoreOriginalParent();
             Debug.Log("[WhiteHoleCore] Keep Device ending complete. Abstract dimension has expanded.");
+        }
+
+        private void PinToPersistentRoot()
+        {
+            if (_isPinnedToPersistentRoot) return;
+
+            _originalParent = transform.parent;
+            _persistentRoot = GetOrCreatePersistentRoot();
+            if (_persistentRoot != null)
+            {
+                transform.SetParent(_persistentRoot, true);
+                _isPinnedToPersistentRoot = true;
+            }
+        }
+
+        private void RestoreOriginalParent()
+        {
+            if (!_isPinnedToPersistentRoot) return;
+
+            transform.SetParent(_originalParent, true);
+            _isPinnedToPersistentRoot = false;
+        }
+
+        private Transform GetOrCreatePersistentRoot()
+        {
+            if (_persistentRoot != null) return _persistentRoot;
+
+            var rootObj = GameObject.Find("WhiteHoleCore_PersistentRoot");
+            if (rootObj == null)
+            {
+                rootObj = new GameObject("WhiteHoleCore_PersistentRoot");
+            }
+
+            _persistentRoot = rootObj.transform;
+            return _persistentRoot;
         }
 
         private IEnumerator PhasingSequence()

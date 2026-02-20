@@ -358,10 +358,10 @@ MonoBehaviour:
     choices: []
     nextNodeIndex: -1
     itemRewards: []
-    triggerID: TriggerDestroyEnding()
+    triggerID: ending_destroy
   - speakerNameOverride: You
     text: 
     choices: []
     nextNodeIndex: -1
     itemRewards: []
-    triggerID: TriggerKeepEnding()
+    triggerID: ending_keep
