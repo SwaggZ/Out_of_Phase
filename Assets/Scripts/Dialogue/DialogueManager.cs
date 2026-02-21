@@ -114,8 +114,10 @@ namespace OutOfPhase.Dialogue
         {
             if (!IsDialogueActive) return;
 
-            // E key or LMB to advance / skip typewriter
-            bool advancePressed = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+            // E key, Space, Enter, or LMB to advance / skip typewriter
+            bool advancePressed = Keyboard.current != null && (Keyboard.current.eKey.wasPressedThisFrame || 
+                                                                Keyboard.current.spaceKey.wasPressedThisFrame ||
+                                                                Keyboard.current.enterKey.wasPressedThisFrame);
             bool clickPressed = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
 
             if (advancePressed || clickPressed)

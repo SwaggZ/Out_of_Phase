@@ -84,11 +84,30 @@ namespace OutOfPhase.Dimension
             if (autoCreateUI && canvas == null)
             {
                 CreateWheelUI();
+                Debug.Log("[DimensionWheel] Created wheel UI");
             }
+            else if (canvas != null)
+            {
+                Debug.Log($"[DimensionWheel] Canvas already assigned: {canvas.gameObject.name}");
+            }
+            
+            // Check if DimensionManager is available
+            var dimMgr = GetDimensionManager();
+            if (dimMgr != null)
+                Debug.Log($"[DimensionWheel] DimensionManager is ready, current dimension: {dimMgr.CurrentDimension}");
+            else
+                Debug.LogWarning("[DimensionWheel] DimensionManager not found during Start()");
             
             // Start hidden
             if (wheelContainer != null)
+            {
                 wheelContainer.gameObject.SetActive(false);
+                Debug.Log($"[DimensionWheel] Wheel container hidden, active: {wheelContainer.gameObject.activeInHierarchy}");
+            }
+            else
+            {
+                Debug.LogWarning("[DimensionWheel] wheelContainer is null!");
+            }
         }
 
         private void OnEnable()
@@ -133,17 +152,47 @@ namespace OutOfPhase.Dimension
             UpdateSelection();
         }
 
+        private DimensionManager GetDimensionManager()
+        {
+            if (DimensionManager.Instance != null)
+                return DimensionManager.Instance;
+            
+            // Try to find it in scene if Instance is somehow null
+            var manager = FindFirstObjectByType<DimensionManager>();
+            if (manager != null)
+            {
+                Debug.LogWarning("[DimensionWheel] DimensionManager.Instance was null but found instance in scene, resetting Instance");
+                return manager;
+            }
+            
+            Debug.LogError("[DimensionWheel] No DimensionManager found in scene! Available DimensionManager instances: " 
+                + FindObjectsByType<DimensionManager>(FindObjectsSortMode.None).Length);
+            return null;
+        }
+
         private void OpenWheel()
         {
-            if (DimensionManager.Instance == null) return;
-            if (DimensionManager.Instance.IsSwitchingLocked) return;
+            Debug.Log("[DimensionWheel] OpenWheel called");
+            
+            var dimensionManager = GetDimensionManager();
+            if (dimensionManager == null) 
+            {
+                Debug.LogWarning("[DimensionWheel] Could not get DimensionManager!");
+                return;
+            }
+            if (dimensionManager.IsSwitchingLocked) 
+            {
+                Debug.Log("[DimensionWheel] Dimension switching is locked");
+                return;
+            }
             
             _isOpen = true;
+            Debug.Log("[DimensionWheel] Wheel opened, _isOpen = true");
             
             // Store current state
             _previousTimeScale = Time.timeScale;
             _cursorWasLocked = Cursor.lockState == CursorLockMode.Locked;
-            _previousSelection = DimensionManager.Instance.CurrentDimension;
+            _previousSelection = dimensionManager.CurrentDimension;
             
             // Slow time
             Time.timeScale = openTimeScale;
@@ -159,10 +208,16 @@ namespace OutOfPhase.Dimension
             // Show UI
             if (wheelContainer != null)
             {
+                Debug.Log("[DimensionWheel] Showing wheel container");
                 RebuildVisibleDimensions();
                 RebuildWheelLayout();
                 wheelContainer.gameObject.SetActive(true);
+                Debug.Log($"[DimensionWheel] Wheel container active: {wheelContainer.gameObject.activeInHierarchy}");
                 UpdateSegmentVisuals();
+            }
+            else
+            {
+                Debug.LogError("[DimensionWheel] wheelContainer is null in OpenWheel!");
             }
             
             // Set hovered to current dimension initially
@@ -402,7 +457,15 @@ namespace OutOfPhase.Dimension
                 labelRect.offsetMax = Vector2.zero;
 
                 TextMeshProUGUI label = labelObj.AddComponent<TextMeshProUGUI>();
-                label.text = (dimIndex + 1).ToString();
+                // Show dimension name instead of just number
+                if (DimensionManager.Instance != null)
+                {
+                    label.text = DimensionManager.Instance.GetDimensionName(dimIndex);
+                }
+                else
+                {
+                    label.text = (dimIndex + 1).ToString();
+                }
                 label.alignment = TextAlignmentOptions.Center;
                 label.fontSize = 28;
                 label.fontStyle = FontStyles.Bold;
@@ -415,12 +478,16 @@ namespace OutOfPhase.Dimension
 
         private void CreateWheelUI()
         {
+            Debug.Log("[DimensionWheel] CreateWheelUI - Starting wheel UI creation");
+            
             // Create Canvas
             GameObject canvasObj = new GameObject("DimensionWheelCanvas");
             canvasObj.transform.SetParent(transform);
             canvas = canvasObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
+            Debug.Log("[DimensionWheel] Created canvas with sorting order 100");
+            
             var scaler = canvasObj.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
@@ -436,6 +503,7 @@ namespace OutOfPhase.Dimension
             wheelContainer.anchorMax = new Vector2(0.5f, 0.5f);
             wheelContainer.anchoredPosition = Vector2.zero;
             wheelContainer.sizeDelta = new Vector2(wheelRadius * 2.5f, wheelRadius * 2.5f);
+            Debug.Log($"[DimensionWheel] Created wheel container: {containerObj.name}");
             
             // Create background
             GameObject bgObj = new GameObject("Background");
@@ -463,6 +531,7 @@ namespace OutOfPhase.Dimension
             
             // Create segments
             CreateSegments();
+            Debug.Log("[DimensionWheel] CreateWheelUI complete");
         }
 
         private void CreateSegments()

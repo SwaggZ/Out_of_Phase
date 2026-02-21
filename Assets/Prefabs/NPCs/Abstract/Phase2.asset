@@ -342,11 +342,11 @@ MonoBehaviour:
   - speakerNameOverride: You
     text: Keep it active.
     choices:
-    - choiceText: Destroy the device
+    - choiceText: Destroy the device, Saving all dimensions
       targetNodeIndex: 55
       requiredItems: []
       itemCosts: []
-    - choiceText: Keep it active
+    - choiceText: Keep it active, Destroying all dimensions
       targetNodeIndex: 56
       requiredItems: []
       itemCosts: []

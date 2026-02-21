@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 using OutOfPhase.Interaction;
 using OutOfPhase.Dialogue;
 using OutOfPhase.Player;
@@ -101,7 +104,23 @@ namespace OutOfPhase.Dimension
         [SerializeField] private AudioClip expansionSound;
 
         [Tooltip("Duration of expansion sequence.")]
-        [SerializeField] private float expansionDuration = 6f;
+        [SerializeField] private float expansionDuration = 20f;
+
+        [Tooltip("Platforms to grow during Keep Device ending (selected from Collapse Targets).")]
+        [SerializeField] private GameObject[] platformsToGrow;
+
+        [Tooltip("Core radius multiplier for growth animation.")]
+        [SerializeField] private float coreRadiusMultiplier = 10f;
+
+        [Tooltip("How many light lines to add for the expansion.")]
+        [SerializeField] private int additionalLightLines = 10;
+
+        [Header("Ending Screen")]
+        [Tooltip("Time to wait before showing the ending screen (seconds).")]
+        [SerializeField] private float timeBeforeEndingScreen = 2f;
+
+        [Tooltip("Credit text to display.")]
+        [SerializeField] private string creditText = "Design & Programming\nAviv Tenenbaum Haddar";
 
         // === Events (C# events, not shown in inspector) ===
         /// <summary>Called when the first monologue ends (before phasing).</summary>
@@ -233,9 +252,8 @@ namespace OutOfPhase.Dimension
             if (secondMonologue != null && DialogueManager.Instance != null)
             {
                 bool dialogueComplete = false;
-                int choiceIndex = -1;
 
-                // Subscribe to dialogue end to capture which choice was made
+                // Subscribe to dialogue end
                 void OnEnded()
                 {
                     dialogueComplete = true;
@@ -286,7 +304,10 @@ namespace OutOfPhase.Dimension
 
             // Switch cameras
             if (_playerCamera != null)
+            {
                 _playerCamera.enabled = false;
+                _playerCamera.gameObject.SetActive(false);
+            }
             if (endingCamera != null)
             {
                 if (!endingCamera.gameObject.activeSelf)
@@ -295,6 +316,9 @@ namespace OutOfPhase.Dimension
                 if (!endingCamera.gameObject.activeInHierarchy)
                     Debug.LogWarning("[WhiteHoleCore] Ending camera is still inactive in hierarchy. Check parent GameObjects.");
             }
+            
+            // Wait a frame for camera switch to take effect
+            yield return null;
 
             // Play collapse sound
             if (collapseSound != null)
@@ -369,6 +393,9 @@ namespace OutOfPhase.Dimension
             // Fade to black
             yield return StartCoroutine(FadeToBlack(fadeToBlackDuration));
 
+            // Disable GUI and show ending screen
+            yield return StartCoroutine(ShowEndingScreen("DESTROY DEVICE", "The core has been destroyed.\nAll dimensions are saved, but at the cost of your existence."));
+
             OnEndingComplete?.Invoke();
             RestoreOriginalParent();
             Debug.Log("[WhiteHoleCore] Destroy Device ending complete. Player saved all dimensions.");
@@ -378,6 +405,27 @@ namespace OutOfPhase.Dimension
         {
             _currentState = EndingState.EndingCutscene;
             OnKeepDeviceChosen?.Invoke();
+
+            // Lock player input
+            SetPlayerControlsEnabled(false);
+
+            // Switch cameras
+            if (_playerCamera != null)
+            {
+                _playerCamera.enabled = false;
+                _playerCamera.gameObject.SetActive(false);
+            }
+            if (endingCamera != null)
+            {
+                if (!endingCamera.gameObject.activeSelf)
+                    endingCamera.gameObject.SetActive(true);
+                endingCamera.enabled = true;
+                if (!endingCamera.gameObject.activeInHierarchy)
+                    Debug.LogWarning("[WhiteHoleCore] Ending camera is still inactive in hierarchy. Check parent GameObjects.");
+            }
+
+            // Wait a frame for camera switch to take effect
+            yield return null;
 
             // Play expansion sound
             if (expansionSound != null)
@@ -390,7 +438,26 @@ namespace OutOfPhase.Dimension
                 Destroy(vfx, expansionDuration + 5f);
             }
 
-            // Animate expansion - screen pulses and color shifts
+            // Store original platform scales
+            Dictionary<GameObject, (Vector3 scale, int originalLightLines, int originalLightStrikes)> platformData = new Dictionary<GameObject, (Vector3, int, int)>();
+            if (platformsToGrow != null)
+            {
+                foreach (var platform in platformsToGrow)
+                {
+                    if (platform != null)
+                    {
+                        var glitchPlatform = platform.GetComponent<GlitchPlatform>();
+                        int lightLines = glitchPlatform != null ? glitchPlatform.LightLineCount : 6;
+                        int lightStrikes = glitchPlatform != null ? glitchPlatform.LightStrikeCount : 4;
+                        platformData[platform] = (platform.transform.localScale, lightLines, lightStrikes);
+                    }
+                }
+            }
+
+            // Store original core scale
+            Vector3 originalCoreScale = transform.localScale;
+
+            // Animate expansion - screen pulses and color shifts, platforms grow
             float elapsed = 0f;
             Color abstractColor = new Color(0.3f, 0.1f, 0.5f, 0.6f); // Purple/abstract tint
 
@@ -398,6 +465,33 @@ namespace OutOfPhase.Dimension
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / expansionDuration;
+
+                // Grow platforms
+                if (platformsToGrow != null && platformData.Count > 0)
+                {
+                    foreach (var platform in platformsToGrow)
+                    {
+                        if (platform != null && platformData.TryGetValue(platform, out var data))
+                        {
+                            // Scale up smoothly
+                            float growthScale = Mathf.Lerp(1f, 2f, t); // Grow to 2x size
+                            platform.transform.localScale = data.scale * growthScale;
+
+                            // Gradually increase light lines and strikes
+                            var glitchPlatform = platform.GetComponent<GlitchPlatform>();
+                            if (glitchPlatform != null)
+                            {
+                                glitchPlatform.LightLineCount = Mathf.RoundToInt(Mathf.Lerp(data.originalLightLines, data.originalLightLines + additionalLightLines, t));
+                                glitchPlatform.LightStrikeCount = Mathf.RoundToInt(Mathf.Lerp(data.originalLightStrikes, data.originalLightStrikes + 3, t));
+                                glitchPlatform.GeneratePlatform(); // Regenerate to apply changes
+                            }
+                        }
+                    }
+                }
+
+                // Grow core radius
+                float coreGrowth = Mathf.Lerp(1f, coreRadiusMultiplier, t);
+                transform.localScale = originalCoreScale * coreGrowth;
 
                 // Pulsing abstract overlay
                 float pulse = Mathf.Sin(t * Mathf.PI * 8f) * 0.5f + 0.5f;
@@ -417,6 +511,9 @@ namespace OutOfPhase.Dimension
 
             // Fade to abstract color
             yield return StartCoroutine(FadeToColor(abstractColor, 2f));
+
+            // Disable GUI and show ending screen
+            yield return StartCoroutine(ShowEndingScreen("KEEP DEVICE", "The Abstract dimension has expanded.\nConsuming all dimensions keeping only one infinite realm."));
 
             OnEndingComplete?.Invoke();
             RestoreOriginalParent();
@@ -591,6 +688,171 @@ namespace OutOfPhase.Dimension
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
+        }
+
+        private void DisableGameGUI()
+        {
+            Debug.Log("[WhiteHoleCore] DisableGameGUI called - disabling game canvases");
+            
+            // Find all canvases and disable game UI (except our screen effects and ending screen)
+            Canvas[] allCanvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            foreach (var canvas in allCanvases)
+            {
+                // Skip our own screen effects canvas and ending screen
+                if (canvas.gameObject.name == "WhiteHoleCoreScreenEffects" || 
+                    canvas.gameObject.name == "EndingScreen")
+                {
+                    continue;
+                }
+
+                // Only disable canvases that are in the game scene (not DontDestroyOnLoad)
+                if (canvas.gameObject.scene.isLoaded && canvas.gameObject.scene.name != "DontDestroyOnLoad")
+                {
+                    Debug.Log($"[WhiteHoleCore] Disabling canvas: {canvas.gameObject.name} from scene: {canvas.gameObject.scene.name}");
+                    canvas.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private IEnumerator ShowEndingScreen(string endingTitle, string endingDescription)
+        {
+            // Wait before showing ending screen
+            yield return new WaitForSeconds(timeBeforeEndingScreen);
+
+            // Enable mouse for button interaction
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // Disable game GUI
+            DisableGameGUI();
+
+            // Create ending screen canvas
+            GameObject endingScreenObj = new GameObject("EndingScreen");
+            var canvas = endingScreenObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 2000;
+
+            var scaler = endingScreenObj.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+
+            endingScreenObj.AddComponent<GraphicRaycaster>();
+
+            // Background
+            GameObject bgObj = new GameObject("Background");
+            bgObj.transform.SetParent(endingScreenObj.transform, false);
+            var bgImage = bgObj.AddComponent<Image>();
+            bgImage.color = Color.black;
+            var bgRect = bgObj.GetComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+
+            // Title
+            GameObject titleObj = new GameObject("Title");
+            titleObj.transform.SetParent(endingScreenObj.transform, false);
+            var titleText = titleObj.AddComponent<TextMeshProUGUI>();
+            titleText.text = endingTitle;
+            titleText.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            titleText.fontSize = 100;
+            titleText.alignment = TextAlignmentOptions.Center;
+            titleText.color = new Color(0f, 0.9f, 1f, 1f); // Cyan
+            var titleRect = titleObj.GetComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0.5f, 0.5f);
+            titleRect.anchorMax = new Vector2(0.5f, 0.5f);
+            titleRect.anchoredPosition = new Vector2(0, 150);
+            titleRect.sizeDelta = new Vector2(1600, 200);
+
+            // Description
+            GameObject descObj = new GameObject("Description");
+            descObj.transform.SetParent(endingScreenObj.transform, false);
+            var descText = descObj.AddComponent<TextMeshProUGUI>();
+            descText.text = endingDescription;
+            descText.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            descText.fontSize = 36;
+            descText.alignment = TextAlignmentOptions.Center;
+            descText.color = Color.white;
+            var descRect = descObj.GetComponent<RectTransform>();
+            descRect.anchorMin = new Vector2(0.5f, 0.5f);
+            descRect.anchorMax = new Vector2(0.5f, 0.5f);
+            descRect.anchoredPosition = new Vector2(0, 20);
+            descRect.sizeDelta = new Vector2(1600, 300);
+
+            // Credits
+            GameObject creditsObj = new GameObject("Credits");
+            creditsObj.transform.SetParent(endingScreenObj.transform, false);
+            var creditsText = creditsObj.AddComponent<TextMeshProUGUI>();
+            creditsText.text = creditText;
+            creditsText.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            creditsText.fontSize = 28;
+            creditsText.alignment = TextAlignmentOptions.Center;
+            creditsText.color = new Color(0.8f, 0.8f, 0.8f, 1f); // Light gray
+            var creditsRect = creditsObj.GetComponent<RectTransform>();
+            creditsRect.anchorMin = new Vector2(0.5f, 0.1f);
+            creditsRect.anchorMax = new Vector2(0.5f, 0.1f);
+            creditsRect.anchoredPosition = new Vector2(0, 0);
+            creditsRect.sizeDelta = new Vector2(1200, 200);
+
+            // Back button
+            GameObject buttonObj = new GameObject("BackButton");
+            buttonObj.transform.SetParent(endingScreenObj.transform, false);
+            var buttonImage = buttonObj.AddComponent<Image>();
+            buttonImage.color = new Color(0.05f, 0.05f, 0.15f, 0.9f);
+            var buttonRect = buttonObj.GetComponent<RectTransform>();
+            buttonRect.anchorMin = new Vector2(0.5f, 0.02f);
+            buttonRect.anchorMax = new Vector2(0.5f, 0.02f);
+            buttonRect.anchoredPosition = new Vector2(0, 0);
+            buttonRect.sizeDelta = new Vector2(300, 60);
+
+            // Button text
+            GameObject buttonTextObj = new GameObject("Text");
+            buttonTextObj.transform.SetParent(buttonObj.transform, false);
+            var buttonText = buttonTextObj.AddComponent<TextMeshProUGUI>();
+            buttonText.text = "Return to Main Menu";
+            buttonText.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            buttonText.fontSize = 32;
+            buttonText.alignment = TextAlignmentOptions.Center;
+            buttonText.color = Color.white;
+            var buttonTextRect = buttonTextObj.GetComponent<RectTransform>();
+            buttonTextRect.anchorMin = Vector2.zero;
+            buttonTextRect.anchorMax = Vector2.one;
+            buttonTextRect.offsetMin = Vector2.zero;
+            buttonTextRect.offsetMax = Vector2.zero;
+
+            // Button interaction
+            var button = buttonObj.AddComponent<Button>();
+            button.onClick.AddListener(() => ReturnToMainMenu());
+
+            // Add hover colors
+            ColorBlock colors = button.colors;
+            colors.normalColor = new Color(0.05f, 0.05f, 0.15f, 0.9f);
+            colors.highlightedColor = new Color(0.1f, 0.1f, 0.25f, 1f);
+            colors.selectedColor = new Color(0.1f, 0.1f, 0.25f, 1f);
+            colors.pressedColor = new Color(0.0f, 0.9f, 1f, 1f);
+            button.colors = colors;
+
+            // Fade in the ending screen
+            var canvasGroup = endingScreenObj.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 0f;
+            float fadeInDuration = 1.5f;
+            float elapsed = 0f;
+            while (elapsed < fadeInDuration)
+            {
+                elapsed += Time.deltaTime;
+                canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsed / fadeInDuration);
+                yield return null;
+            }
+            canvasGroup.alpha = 1f;
+
+            // Keep the ending screen visible until user clicks
+            yield return new WaitUntil(() => false); // This will never complete, player must click button
+        }
+
+        private void ReturnToMainMenu()
+        {
+            Time.timeScale = 1f; // Ensure time is running
+            SceneManager.LoadScene("MainMenu");
         }
 
         #region Screen Effects

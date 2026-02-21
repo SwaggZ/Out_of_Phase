@@ -46,6 +46,33 @@ namespace OutOfPhase.Dimension
 
         private void Awake()
         {
+            Debug.Log("[DimensionTransitionEffect] Awake() called");
+            Debug.Log($"[DimensionTransitionEffect] Current parent: {(transform.parent != null ? transform.parent.name : "NONE (root level)")}, Scene: {gameObject.scene.name}");
+            
+            // CRITICAL: Ensure this GameObject is not a child of anything that can be destroyed
+            // If it's parented, detach it FIRST before DontDestroyOnLoad
+            if (transform.parent != null)
+            {
+                Debug.LogWarning($"[DimensionTransitionEffect] WARNING: Component is parented to {transform.parent.name}! Detaching immediately...");
+                transform.SetParent(null, false);
+                Debug.Log("[DimensionTransitionEffect] Detached from parent");
+            }
+            
+            // Make the GAMEOBJECT persistent (not just this component)
+            if (gameObject.scene.name != "DontDestroyOnLoad")
+            {
+                DontDestroyOnLoad(gameObject);
+                Debug.Log("[DimensionTransitionEffect] Added GameObject to DontDestroyOnLoad");
+            }
+            else
+            {
+                Debug.Log("[DimensionTransitionEffect] GameObject already in DontDestroyOnLoad scene");
+            }
+            
+            // Subscribe to manager ready event NOW, so it survives disable/enable cycles
+            DimensionManager.OnManagerReady += OnManagerReady;
+            Debug.Log("[DimensionTransitionEffect] Registered for OnManagerReady event");
+            
             CreateTextures();
             
             if (effectCanvas == null)
@@ -59,17 +86,29 @@ namespace OutOfPhase.Dimension
 
         private void OnEnable()
         {
-            DimensionManager.OnManagerReady += OnManagerReady;
+            Debug.Log("[DimensionTransitionEffect] OnEnable() called, component enabled: " + enabled);
             
-            if (DimensionManager.Instance != null)
+            // If manager is already ready, subscribe to dimension changes immediately
+            if (DimensionManager.IsManagerReady)
             {
+                Debug.Log("[DimensionTransitionEffect] DimensionManager is already ready in OnEnable");
                 SubscribeToManager();
+            }
+            else if (DimensionManager.Instance != null)
+            {
+                Debug.Log("[DimensionTransitionEffect] DimensionManager.Instance is available but not marked ready yet");
+                SubscribeToManager();
+            }
+            else
+            {
+                Debug.LogWarning("[DimensionTransitionEffect] DimensionManager not available in OnEnable, will wait for ready event");
             }
         }
 
         private void OnDisable()
         {
-            DimensionManager.OnManagerReady -= OnManagerReady;
+            Debug.Log("[DimensionTransitionEffect] OnDisable() called");
+            // Note: We do NOT unregister from OnManagerReady here - that subscription persists
             
             if (DimensionManager.Instance != null)
             {
@@ -77,18 +116,56 @@ namespace OutOfPhase.Dimension
             }
         }
 
+        private void Start()
+        {
+            Debug.Log("[DimensionTransitionEffect] Start() called, component active: " + gameObject.activeInHierarchy + ", enabled: " + enabled);
+        }
+
         private void OnManagerReady()
         {
+            Debug.Log("[DimensionTransitionEffect] OnManagerReady event received");
+            
+            // Safety check in case component was destroyed
+            if (this == null || gameObject == null)
+            {
+                Debug.LogError("[DimensionTransitionEffect] Component/GameObject destroyed before OnManagerReady could process!");
+                return;
+            }
+            
             SubscribeToManager();
         }
 
         private void SubscribeToManager()
         {
-            DimensionManager.Instance.OnTransitionStart += OnTransitionStart;
+            // Another safety check
+            if (this == null || gameObject == null)
+            {
+                Debug.LogError("[DimensionTransitionEffect] Component/GameObject destroyed during SubscribeToManager!");
+                return;
+            }
+            
+            if (DimensionManager.Instance != null)
+            {
+                DimensionManager.Instance.OnTransitionStart += OnTransitionStart;
+                Debug.Log("[DimensionTransitionEffect] Successfully subscribed to DimensionManager.OnTransitionStart");
+            }
+            else
+            {
+                Debug.LogWarning("[DimensionTransitionEffect] Could not subscribe - DimensionManager.Instance is still null");
+            }
         }
 
         private void OnTransitionStart(int targetDimension)
         {
+            Debug.Log($"[DimensionTransitionEffect] OnTransitionStart triggered for dimension {targetDimension}");
+            
+            // Safety check: if this component was destroyed, we can't run the effect
+            if (this == null || gameObject == null)
+            {
+                Debug.LogWarning("[DimensionTransitionEffect] Component is destroyed, cannot play transition effect");
+                return;
+            }
+            
             if (_transitionCoroutine != null)
             {
                 StopCoroutine(_transitionCoroutine);
@@ -98,6 +175,7 @@ namespace OutOfPhase.Dimension
 
         private IEnumerator PlayTransitionEffect(int targetDimension)
         {
+            Debug.Log($"[DimensionTransitionEffect] PlayTransitionEffect started for dimension {targetDimension}");
             // Epilepsy mode: simple color fade, no glitch/flash
             if (UI.SettingsManager.EpilepsyMode)
             {
@@ -230,8 +308,16 @@ namespace OutOfPhase.Dimension
 
         private void SetOverlayActive(bool active)
         {
+            Debug.Log($"[DimensionTransitionEffect] SetOverlayActive({active}), effectCanvas: {(effectCanvas != null ? "exists" : "null")}");
             if (effectCanvas != null)
+            {
                 effectCanvas.gameObject.SetActive(active);
+                Debug.Log($"[DimensionTransitionEffect] Canvas set to active: {active}");
+            }
+            else
+            {
+                Debug.LogWarning("[DimensionTransitionEffect] effectCanvas is null!");
+            }
         }
 
         /// <summary>
@@ -376,12 +462,15 @@ namespace OutOfPhase.Dimension
 
         private void CreateEffectUI()
         {
-            // Create Canvas
-            GameObject canvasObj = new GameObject("DimensionTransitionCanvas");
-            canvasObj.transform.SetParent(transform);
+            Debug.Log("[DimensionTransitionEffect] CreateEffectUI() called");
+            
+            // Create a top-level canvas GameObject (not as child of this component)
+            GameObject canvasObj = new GameObject("DimensionTransitionEffectCanvas");
             effectCanvas = canvasObj.AddComponent<Canvas>();
             effectCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             effectCanvas.sortingOrder = 999; // On top of everything
+            
+            Debug.Log($"[DimensionTransitionEffect] Created canvas with sortingOrder 999");
             
             CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -428,6 +517,8 @@ namespace OutOfPhase.Dimension
             dimensionText.fontSize = 24;
             dimensionText.fontStyle = FontStyles.Bold;
             dimensionText.color = Color.cyan;
+            
+            Debug.Log("[DimensionTransitionEffect] CreateEffectUI() completed successfully");
         }
 
         private void SetFullScreen(RectTransform rect)

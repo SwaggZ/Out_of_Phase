@@ -84,14 +84,30 @@ namespace OutOfPhase.Inventory
 
         private void CreateHotbarUI()
         {
-            // Find or create canvas
-            Canvas canvas = FindFirstObjectByType<Canvas>();
+            Debug.Log("[InventoryUI] CreateHotbarUI - Starting hotbar creation");
+            
+            // Always create a dedicated canvas for inventory UI
+            Canvas canvas = null;
+            
+            // Check if we already have a UI Canvas for inventory
+            Canvas[] allCanvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            foreach (var c in allCanvases)
+            {
+                if (c.gameObject.name == "UI Canvas" || c.gameObject.name == "InventoryCanvas")
+                {
+                    canvas = c;
+                    Debug.Log($"[InventoryUI] Found existing inventory canvas: {c.gameObject.name}, active: {c.gameObject.activeInHierarchy}");
+                    break;
+                }
+            }
+            
             if (canvas == null)
             {
-                GameObject canvasObj = new GameObject("UI Canvas");
+                Debug.Log("[InventoryUI] No inventory canvas found, creating new InventoryCanvas");
+                GameObject canvasObj = new GameObject("InventoryCanvas");
                 canvas = canvasObj.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 0;
+                canvas.sortingOrder = 10; // Higher than interaction prompts
                 canvasObj.AddComponent<GraphicRaycaster>();
             }
 
@@ -106,6 +122,8 @@ namespace OutOfPhase.Inventory
             // Create hotbar container
             GameObject hotbarObj = new GameObject("Hotbar");
             hotbarObj.transform.SetParent(canvas.transform, false);
+            
+            Debug.Log($"[InventoryUI] Hotbar created, canvas active: {canvas.gameObject.activeInHierarchy}");
 
             RectTransform hotbarRect = hotbarObj.AddComponent<RectTransform>();
             hotbarRect.anchorMin = new Vector2(0.5f, 0f);

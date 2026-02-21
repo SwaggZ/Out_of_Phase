@@ -72,6 +72,21 @@ namespace OutOfPhase.Interaction
             Vector3 target = _isPressed ? _pressedLocalPos : _originalLocalPos;
             transform.localPosition = Vector3.Lerp(
                 transform.localPosition, target, pressSpeed * Time.deltaTime);
+
+            // Check if placed box was removed/destroyed
+            if (_isPressed && _placedBox != null)
+            {
+                // Check if box was destroyed
+                if (_placedBox == null || _placedBox.gameObject == null)
+                {
+                    ReleaseWithoutPickup();
+                }
+                // Check if box moved too far from plate
+                else if (Vector3.Distance(transform.position + boxOffset, _placedBox.transform.position) > 1f)
+                {
+                    ReleaseWithoutPickup();
+                }
+            }
         }
 
         public void Interact(InteractionContext context)
@@ -107,6 +122,26 @@ namespace OutOfPhase.Interaction
         private void RemoveBox()
         {
             _placedBox.PickUp();
+            _placedBox = null;
+            _isPressed = false;
+
+            if (releaseSound != null)
+                SFXPlayer.PlayAtPoint(releaseSound, transform.position, soundVolume);
+
+            // Close connected doors
+            foreach (var door in connectedDoors)
+            {
+                if (door != null)
+                    door.LockAndClose();
+            }
+        }
+
+        /// <summary>
+        /// Release the plate when box is removed without player interaction
+        /// (e.g., box destroyed, pushed off, or moved away).
+        /// </summary>
+        private void ReleaseWithoutPickup()
+        {
             _placedBox = null;
             _isPressed = false;
 

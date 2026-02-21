@@ -58,6 +58,12 @@ namespace OutOfPhase.Dimension
         {
             if (DimensionManager.Instance == null) return;
 
+            // Don't apply zone effects during checkpoint load - let the checkpoint restore dimension state first
+            if (OutOfPhase.Progression.CheckpointManager.IsCheckpointLoading)
+            {
+                return;
+            }
+
             ApplyHides();
 
             if (lockSwitching)
@@ -133,6 +139,14 @@ namespace OutOfPhase.Dimension
             if (DimensionManager.Instance == null) return;
             DimensionManager.Instance.RemoveDimensionHides(hiddenDimensions);
             _hidesApplied = false;
+        }
+
+        /// <summary>
+        /// Manually reapply hides (used when checkpoint loads and player spawns already inside).
+        /// </summary>
+        public void ReapplyHidesIfPlayerInside()
+        {
+            OnPlayerEnter();
         }
 
         private void OnDisable()

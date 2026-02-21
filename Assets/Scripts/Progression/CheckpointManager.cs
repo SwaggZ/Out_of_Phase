@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using OutOfPhase.Items;
 using OutOfPhase.Quest;
 
@@ -29,13 +31,20 @@ namespace OutOfPhase.Progression
         // ── Game Flags (key-value store) ──
         private Dictionary<string, bool> _gameFlags = new Dictionary<string, bool>();
 
+        // ── Pending Load ──
+        private bool _pendingLoadOnSceneReady = false;
+        
+        /// <summary>True if checkpoint is currently being loaded. Zones should not force changes during this time.</summary>
+        public static bool IsCheckpointLoading { get; private set; }
+
         // ── Events ──
         public event Action OnCheckpointSaved;
         public event Action OnCheckpointLoaded;
         public event Action OnCheckpointReset;
 
         // ── Properties ──
-        public bool HasCheckpoint => PlayerPrefs.HasKey(SAVE_KEY);
+        /// <summary>True if a checkpoint exists (DISABLED - save system off, always false)</summary>
+        public bool HasCheckpoint => false;
 
         private void Awake()
         {
@@ -45,6 +54,47 @@ namespace OutOfPhase.Progression
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            // Subscribe to scene loaded event
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+            }
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            Debug.Log($"[Checkpoint] OnSceneLoaded - scene: {scene.name}, pendingLoad: {_pendingLoadOnSceneReady}");
+            
+            // If we're flagged to load on scene ready, do it now
+            if (_pendingLoadOnSceneReady)
+            {
+                _pendingLoadOnSceneReady = false;
+                StartCoroutine(LoadCheckpointAfterFrame());
+            }
+        }
+
+        private IEnumerator LoadCheckpointAfterFrame()
+        {
+            Debug.Log("[Checkpoint] LoadCheckpointAfterFrame - waiting one frame");
+            // Wait a frame to ensure all managers are initialized
+            yield return null;
+            Debug.Log("[Checkpoint] LoadCheckpointAfterFrame - calling LoadCheckpoint now");
+            LoadCheckpoint();
+        }
+
+        /// <summary>
+        /// Call this before loading the game scene to load checkpoint after scene loads.
+        /// </summary>
+        public void PrepareLoadOnSceneReady()
+        {
+            _pendingLoadOnSceneReady = true;
         }
 
         // ══════════════════════════════════════════════════════
@@ -53,97 +103,12 @@ namespace OutOfPhase.Progression
 
         /// <summary>
         /// Captures the full game state and writes it to PlayerPrefs.
+        /// DISABLED: Save system is turned off - game runs fresh each time.
         /// </summary>
         public void SaveCheckpoint(string label = "Checkpoint")
         {
-            SaveData data = new SaveData
-            {
-                saveName = label,
-                timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            };
-
-            // Player transform
-            var player = FindFirstObjectByType<Player.PlayerMovement>();
-            if (player != null)
-            {
-                data.SetPlayerPosition(player.transform.position);
-
-                var look = player.GetComponentInChildren<Player.PlayerLook>();
-                if (look == null)
-                    look = FindFirstObjectByType<Player.PlayerLook>();
-                if (look != null)
-                {
-                    data.SetPlayerRotation(
-                        player.transform.eulerAngles.y,
-                        look.transform.localEulerAngles.x > 180f
-                            ? look.transform.localEulerAngles.x - 360f
-                            : look.transform.localEulerAngles.x
-                    );
-                }
-            }
-
-            // Section
-            if (SectionManager.Instance != null)
-            {
-                data.currentSectionIndex = SectionManager.Instance.CurrentSectionIndex;
-                var completed = new List<int>();
-                for (int i = 0; i < SectionManager.Instance.SectionCount; i++)
-                {
-                    if (SectionManager.Instance.IsSectionCompleted(i))
-                        completed.Add(i);
-                }
-                data.completedSections = completed.ToArray();
-            }
-
-            // Dimension
-            if (Dimension.DimensionManager.Instance != null)
-                data.currentDimension = Dimension.DimensionManager.Instance.CurrentDimension;
-
-            // Inventory
-            var inventory = FindFirstObjectByType<Inventory.Inventory>();
-            if (inventory != null)
-            {
-                var slots = new List<InventorySlotData>();
-                for (int i = 0; i < inventory.SlotCount; i++)
-                {
-                    var slot = inventory.GetSlot(i);
-                    if (slot != null && slot.Item != null)
-                    {
-                        slots.Add(new InventorySlotData
-                        {
-                            itemId = slot.Item.name, // ScriptableObject asset name
-                            quantity = slot.Quantity,
-                            durability = slot.HasDurability ? slot.Durability : -1f
-                        });
-                    }
-                    else
-                    {
-                        slots.Add(new InventorySlotData { itemId = "", quantity = 0, durability = -1f });
-                    }
-                }
-                data.inventorySlots = slots.ToArray();
-            }
-
-            // Game flags
-            var flagList = new List<StringBoolPair>();
-            foreach (var kvp in _gameFlags)
-                flagList.Add(new StringBoolPair { key = kvp.Key, value = kvp.Value });
-            data.flags = flagList.ToArray();
-
-            // Quests
-            if (QuestManager.Instance != null)
-            {
-                data.completedQuestIds = QuestManager.Instance.GetCompletedQuestIds();
-                data.activeQuestIds = QuestManager.Instance.GetActiveQuestIds();
-            }
-
-            // Write
-            string json = JsonUtility.ToJson(data, false);
-            PlayerPrefs.SetString(SAVE_KEY, json);
-            PlayerPrefs.Save();
-
-            Debug.Log($"[Checkpoint] Saved: {label} at section {data.currentSectionIndex}");
-            OnCheckpointSaved?.Invoke();
+            // SAVE SYSTEM DISABLED - Game runs fresh each time
+            Debug.Log($"[Checkpoint] Save disabled: {label}");
         }
 
         // ══════════════════════════════════════════════════════
@@ -152,86 +117,14 @@ namespace OutOfPhase.Progression
 
         /// <summary>
         /// Restores full game state from the last saved checkpoint.
+        /// DISABLED: Save system is turned off - game always starts fresh.
         /// </summary>
         public bool LoadCheckpoint()
         {
-            if (!HasCheckpoint)
-            {
-                Debug.LogWarning("[Checkpoint] No checkpoint found.");
-                return false;
-            }
-
-            string json = PlayerPrefs.GetString(SAVE_KEY, "");
-            if (string.IsNullOrEmpty(json)) return false;
-
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
-            if (data == null) return false;
-
-            // Player position
-            var player = FindFirstObjectByType<Player.PlayerMovement>();
-            if (player != null)
-            {
-                var cc = player.GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
-
-                player.transform.position = data.GetPlayerPosition();
-                player.transform.rotation = Quaternion.Euler(0f, data.playerRotation[0], 0f);
-
-                if (cc != null) cc.enabled = true;
-
-                var look = player.GetComponentInChildren<Player.PlayerLook>();
-                if (look == null) look = FindFirstObjectByType<Player.PlayerLook>();
-                if (look != null)
-                    look.SnapToRotation(data.playerRotation[0], data.playerRotation[1]);
-            }
-
-            // Section
-            if (SectionManager.Instance != null)
-            {
-                var completed = new HashSet<int>(data.completedSections ?? Array.Empty<int>());
-                SectionManager.Instance.SetSection(data.currentSectionIndex, completed);
-            }
-
-            // Dimension
-            if (Dimension.DimensionManager.Instance != null)
-                Dimension.DimensionManager.Instance.ForceSwitchToDimension(data.currentDimension);
-
-            // Inventory
-            var inventory = FindFirstObjectByType<Inventory.Inventory>();
-            if (inventory != null && data.inventorySlots != null)
-            {
-                inventory.ClearAll();
-                for (int i = 0; i < data.inventorySlots.Length && i < inventory.SlotCount; i++)
-                {
-                    var slotData = data.inventorySlots[i];
-                    if (string.IsNullOrEmpty(slotData.itemId)) continue;
-
-                    var item = FindItemByName(slotData.itemId);
-                    if (item != null)
-                    {
-                        inventory.TryAddItemToSlot(i, item, slotData.quantity, slotData.durability);
-                    }
-                }
-            }
-
-            // Game flags
-            _gameFlags.Clear();
-            if (data.flags != null)
-            {
-                foreach (var pair in data.flags)
-                    _gameFlags[pair.key] = pair.value;
-            }
-
-            // Quests
-            if (QuestManager.Instance != null)
-            {
-                QuestManager.Instance.RestoreCompletedQuests(data.completedQuestIds);
-                QuestManager.Instance.RestoreActiveQuests(data.activeQuestIds, allQuests);
-            }
-
-            Debug.Log($"[Checkpoint] Loaded: {data.saveName} (section {data.currentSectionIndex})");
-            OnCheckpointLoaded?.Invoke();
-            return true;
+            // SAVE SYSTEM DISABLED - Always start fresh with no previous save
+            Debug.Log("[Checkpoint] Load disabled - starting fresh");
+            IsCheckpointLoading = false;
+            return false;
         }
 
         // ══════════════════════════════════════════════════════
@@ -254,11 +147,11 @@ namespace OutOfPhase.Progression
             return loaded;
         }
 
-        /// <summary> Deletes the checkpoint. </summary>
+        /// <summary> Deletes the checkpoint. (DISABLED - save system turned off) </summary>
         public void ClearCheckpoint()
         {
-            PlayerPrefs.DeleteKey(SAVE_KEY);
-            PlayerPrefs.Save();
+            // SAVE SYSTEM DISABLED - No checkpoints to clear
+            Debug.Log("[Checkpoint] Clear disabled");
         }
 
         // ══════════════════════════════════════════════════════
@@ -296,6 +189,40 @@ namespace OutOfPhase.Progression
                     return item;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Re-applies dimension locks and hides that the player is inside.
+        /// Called after checkpoint load since OnTriggerEnter won't fire if player already exists in the collider.
+        /// </summary>
+        private void ReapplyDimensionZones()
+        {
+            var player = FindFirstObjectByType<Player.PlayerMovement>();
+            if (player == null) return;
+
+            // Use a small sphere overlap to find all colliders near the player
+            var colliders = Physics.OverlapSphere(player.transform.position, 1f);
+            
+            foreach (var col in colliders)
+            {
+                if (col == null) continue;
+
+                // Check for DimensionLockVolume
+                var lockVolume = col.GetComponent<Dimension.DimensionLockVolume>();
+                if (lockVolume != null)
+                {
+                    Debug.Log($"[Checkpoint] Reapplying DimensionLockVolume: {lockVolume.gameObject.name}");
+                    lockVolume.ReapplyLocksIfPlayerInside();
+                }
+
+                // Check for DimensionHideVolume
+                var hideVolume = col.GetComponent<Dimension.DimensionHideVolume>();
+                if (hideVolume != null)
+                {
+                    Debug.Log($"[Checkpoint] Reapplying DimensionHideVolume: {hideVolume.gameObject.name}");
+                    hideVolume.ReapplyHidesIfPlayerInside();
+                }
+            }
         }
     }
 }

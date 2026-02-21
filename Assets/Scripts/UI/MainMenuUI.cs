@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using TMPro;
+using OutOfPhase.Progression;
 
 namespace OutOfPhase.UI
 {
@@ -50,6 +51,13 @@ namespace OutOfPhase.UI
             {
                 GameObject go = new GameObject("SettingsManager");
                 go.AddComponent<SettingsManager>();
+            }
+
+            // Ensure CheckpointManager exists
+            if (CheckpointManager.Instance == null)
+            {
+                GameObject go = new GameObject("CheckpointManager");
+                go.AddComponent<CheckpointManager>();
             }
 
             // Ensure EventSystem exists (required for button clicks)
@@ -114,7 +122,11 @@ namespace OutOfPhase.UI
             layout.childControlWidth = false;
             layout.childControlHeight = false;
 
-            // Buttons
+            // Buttons - Show Continue if save exists
+            if (CheckpointManager.Instance != null && CheckpointManager.Instance.HasCheckpoint)
+            {
+                CreateMenuButton(buttonContainer.transform, "CONTINUE", OnContinue);
+            }
             CreateMenuButton(buttonContainer.transform, "NEW GAME", OnNewGame);
             CreateMenuButton(buttonContainer.transform, "SETTINGS", OnSettings);
             CreateMenuButton(buttonContainer.transform, "QUIT", OnQuit);
@@ -256,7 +268,31 @@ namespace OutOfPhase.UI
 
         private void OnNewGame()
         {
+            // Clear any existing save so we start fresh
+            PlayerPrefs.DeleteKey("OutOfPhase_Checkpoint");
+            PlayerPrefs.Save();
+
             Time.timeScale = 1f;
+            GameLoader.Begin(gameSceneName, audioProfilesToPreload, bgColor, accentColor);
+        }
+
+        private void OnContinue()
+        {
+            Debug.Log("[MainMenu] OnContinue - preparing to load checkpoint");
+            
+            // Mark that we should load checkpoint after scene loads
+            if (CheckpointManager.Instance != null)
+            {
+                CheckpointManager.Instance.PrepareLoadOnSceneReady();
+                Debug.Log("[MainMenu] PrepareLoadOnSceneReady called");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenu] CheckpointManager.Instance is null!");
+            }
+
+            Time.timeScale = 1f;
+            Debug.Log($"[MainMenu] Starting GameLoader for scene: {gameSceneName}");
             GameLoader.Begin(gameSceneName, audioProfilesToPreload, bgColor, accentColor);
         }
 

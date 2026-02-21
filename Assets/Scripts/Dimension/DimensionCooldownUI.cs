@@ -25,17 +25,92 @@ namespace OutOfPhase.Dimension
 
         private Image[] _segments;
         private Canvas _canvas;
+        private bool _uiCreated = false;
+
+        private void Awake()
+        {
+            Debug.Log("[DimensionCooldownUI] Awake() called");
+            Debug.Log($"[DimensionCooldownUI] Current parent: {(transform.parent != null ? transform.parent.name : "NONE (root level)")}, Scene: {gameObject.scene.name}");
+            
+            // CRITICAL: Ensure this GameObject is not a child of anything that can be destroyed
+            // If it's parented, detach it FIRST before DontDestroyOnLoad
+            if (transform.parent != null)
+            {
+                Debug.LogWarning($"[DimensionCooldownUI] WARNING: Component is parented to {transform.parent.name}! Detaching immediately...");
+                transform.SetParent(null, false);
+                Debug.Log("[DimensionCooldownUI] Detached from parent");
+            }
+            
+            // Make the GAMEOBJECT persistent (not just this component)
+            if (gameObject.scene.name != "DontDestroyOnLoad")
+            {
+                DontDestroyOnLoad(gameObject);
+                Debug.Log("[DimensionCooldownUI] Added GameObject to DontDestroyOnLoad");
+            }
+            else
+            {
+                Debug.Log("[DimensionCooldownUI] GameObject already in DontDestroyOnLoad scene");
+            }
+        }
 
         private void Start()
         {
-            CreateUI();
+            Debug.Log("[DimensionCooldownUI] Start() called");
+            
+            if (!_uiCreated)
+            {
+                CreateUI();
+                _uiCreated = true;
+            }
+        }
+
+        private void OnEnable()
+        {
+            Debug.Log("[DimensionCooldownUI] OnEnable() called");
+            
+            // Create UI if Start never ran (e.g., component was destroyed and re-enabled)
+            if (!_uiCreated)
+            {
+                CreateUI();
+                _uiCreated = true;
+            }
         }
 
         private void Update()
         {
-            if (DimensionManager.Instance == null || _segments == null) return;
+            // Check if canvas was destroyed and recreate if needed
+            if (_canvas == null && _uiCreated)
+            {
+                Debug.LogWarning("[DimensionCooldownUI] Canvas was destroyed! Recreating...");
+                _uiCreated = false;
+                _segments = null;
+            }
 
-            float progress = DimensionManager.Instance.CooldownProgress;
+            // If segments don't exist or were destroyed, stop here
+            if (_segments == null || _segments.Length == 0)
+                return;
+
+            // Check if any segment Images were destroyed (e.g., scene reload)
+            foreach (var seg in _segments)
+            {
+                if (seg == null || seg.GetComponentInParent<Canvas>() == null)
+                {
+                    Debug.LogWarning("[DimensionCooldownUI] Segments were destroyed during scene reload. Recreating UI...");
+                    _uiCreated = false;
+                    _segments = null;
+                    OnEnable();
+                    return;
+                }
+            }
+
+            // Wait for DimensionManager if not available yet
+            var dimMgr = DimensionManager.Instance;
+            if (dimMgr == null) 
+            {
+                return;
+            }
+
+            float progress = dimMgr.CooldownProgress;
 
             for (int i = 0; i < _segments.Length; i++)
             {
@@ -64,14 +139,28 @@ namespace OutOfPhase.Dimension
 
         private void CreateUI()
         {
-            // Find or create canvas
-            Canvas canvas = FindFirstObjectByType<Canvas>();
+            Debug.Log("[DimensionCooldownUI] CreateUI() called");
+            
+            // Always create a dedicated canvas for dimension cooldown UI
+            Canvas canvas = null;
+            
+            // Check if we already have a dimension UI canvas
+            Canvas[] allCanvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            foreach (var c in allCanvases)
+            {
+                if (c.gameObject.name == "DimensionUICanvas")
+                {
+                    canvas = c;
+                    break;
+                }
+            }
+            
             if (canvas == null)
             {
-                GameObject canvasObj = new GameObject("UI Canvas");
+                GameObject canvasObj = new GameObject("DimensionUICanvas");
                 canvas = canvasObj.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 100;
+                canvas.sortingOrder = 15; // Above inventory
                 canvasObj.AddComponent<GraphicRaycaster>();
             }
 
@@ -156,6 +245,8 @@ namespace OutOfPhase.Dimension
 
                 _segments[i] = segImage;
             }
+            
+            Debug.Log("[DimensionCooldownUI] CreateUI completed successfully");
         }
     }
 }

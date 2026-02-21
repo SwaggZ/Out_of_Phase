@@ -27,9 +27,33 @@ namespace OutOfPhase.Interaction
 
         private float _targetAlpha;
         private Image _backgroundImage;
+        private bool _firstUpdateLogged = false;
 
         private void Awake()
         {
+            Debug.Log("[InteractionPromptUI] Awake() called");
+            Debug.Log($"[InteractionPromptUI] Current parent: {(transform.parent != null ? transform.parent.name : "NONE (root level)")}, Scene: {gameObject.scene.name}");
+            
+            // CRITICAL: Ensure this GameObject is not a child of anything that can be destroyed
+            // If it's parented, detach it FIRST before DontDestroyOnLoad
+            if (transform.parent != null)
+            {
+                Debug.LogWarning($"[InteractionPromptUI] WARNING: Component is parented to {transform.parent.name}! Detaching immediately...");
+                transform.SetParent(null, false);
+                Debug.Log("[InteractionPromptUI] Detached from parent");
+            }
+            
+            // Make the GAMEOBJECT persistent (not just this component)
+            if (gameObject.scene.name != "DontDestroyOnLoad")
+            {
+                DontDestroyOnLoad(gameObject);
+                Debug.Log("[InteractionPromptUI] Added GameObject to DontDestroyOnLoad");
+            }
+            else
+            {
+                Debug.Log("[InteractionPromptUI] GameObject already in DontDestroyOnLoad scene");
+            }
+            
             if (interactor == null)
                 interactor = FindFirstObjectByType<Interactor>();
 
@@ -42,15 +66,19 @@ namespace OutOfPhase.Interaction
 
         private void CreateUI()
         {
+            Debug.Log("[InteractionPromptUI] CreateUI() called");
+            
             // Always create a DEDICATED canvas so other CanvasGroups
             // (e.g. DialogueManager, DimensionTransitionEffect) cannot hide us.
             GameObject canvasObj = new GameObject("InteractionPromptCanvas");
-            canvasObj.transform.SetParent(transform);
-
+            // DO NOT parent to transform - keep canvas independent
+            
             Canvas canvas = canvasObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 50; // above game UI, below dialogue (100)
             canvasObj.AddComponent<GraphicRaycaster>();
+            
+            Debug.Log("[InteractionPromptUI] Created independent canvas");
 
             CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -97,10 +125,25 @@ namespace OutOfPhase.Interaction
 
             RectTransform textRect = promptText.GetComponent<RectTransform>();
             textRect.sizeDelta = new Vector2(360, 40);
+            
+            Debug.Log("[InteractionPromptUI] CreateUI() completed successfully");
         }
 
         private void Update()
         {
+            if (!_firstUpdateLogged)
+            {
+                Debug.Log($"[InteractionPromptUI] First Update: interactor={interactor}, promptText={promptText}, canvasGroup={canvasGroup}");
+                _firstUpdateLogged = true;
+            }
+            
+            // Safety check - component might have been destroyed
+            if (this == null || gameObject == null)
+            {
+                Debug.LogWarning("[InteractionPromptUI] Component/GameObject destroyed!");
+                return;
+            }
+            
             // Retry finding Interactor every frame until found
             if (interactor == null)
                 interactor = FindFirstObjectByType<Interactor>();

@@ -47,6 +47,12 @@ namespace OutOfPhase.Dimension
         {
             if (DimensionManager.Instance == null) return;
 
+            // Don't apply zone effects during checkpoint load - let the checkpoint restore dimension state first
+            if (OutOfPhase.Progression.CheckpointManager.IsCheckpointLoading)
+            {
+                return;
+            }
+
             ApplyDimensionLocks();
 
             if (lockSwitching)
@@ -217,6 +223,14 @@ namespace OutOfPhase.Dimension
             if (DimensionManager.Instance == null) return;
             DimensionManager.Instance.RemoveDimensionLocks(lockedDimensions);
             _locksApplied = false;
+        }
+
+        /// <summary>
+        /// Manually reapply locks (used when checkpoint loads and player spawns already inside).
+        /// </summary>
+        public void ReapplyLocksIfPlayerInside()
+        {
+            OnPlayerEnter();
         }
 
         private void OnDrawGizmos()

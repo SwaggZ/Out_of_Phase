@@ -47,6 +47,7 @@ namespace OutOfPhase.Dimension
 
         // Current state
         private int _currentDimension;
+        private int _transitionTargetDimension = -1; // Track target during transition
         private bool _isTransitioning;
         private bool _switchingLocked;
         private int[] _dimensionLockCounts;
@@ -74,6 +75,9 @@ namespace OutOfPhase.Dimension
 
         /// <summary>Fired when DimensionManager is initialized and ready</summary>
         public static event Action OnManagerReady;
+        
+        /// <summary>True if DimensionManager has been initialized</summary>
+        public static bool IsManagerReady { get; private set; }
 
         // Properties
         public int CurrentDimension => _currentDimension;
@@ -104,10 +108,13 @@ namespace OutOfPhase.Dimension
             // Singleton setup
             if (Instance != null && Instance != this)
             {
+                Debug.Log($"[DimensionManager] Another instance exists ({Instance.gameObject.name}), destroying this one ({gameObject.name})");
                 Destroy(gameObject);
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("[DimensionManager] Initialized and set to DontDestroyOnLoad");
             
             // Initialize
             _currentDimension = Mathf.Clamp(startingDimension, 0, dimensionCount - 1);
@@ -117,7 +124,10 @@ namespace OutOfPhase.Dimension
             EnsureLockArraySize();
             
             // Notify all listeners that manager is ready
+            IsManagerReady = true;
+            Debug.Log("[DimensionManager] Invoking OnManagerReady event");
             OnManagerReady?.Invoke();
+            Debug.Log("[DimensionManager] OnManagerReady event completed");
         }
 
         private void ValidateArraySizes()
@@ -275,6 +285,7 @@ namespace OutOfPhase.Dimension
         {
             int oldDimension = _currentDimension;
             _isTransitioning = true;
+            _transitionTargetDimension = targetDimension;
             
             OnTransitionStart?.Invoke(targetDimension);
             
@@ -284,12 +295,25 @@ namespace OutOfPhase.Dimension
                 yield return new WaitForSeconds(transitionDuration);
             }
             
+            // Check if target dimension became blocked (hidden or locked) during transition
+            // OR if switching got locked during transition
+            if (IsDimensionHidden(targetDimension) || IsDimensionLocked(targetDimension) || _switchingLocked)
+            {
+                Debug.Log($"[DimensionManager] Transition to dimension {targetDimension} failed - dimension became blocked or switching locked!");
+                _isTransitioning = false;
+                _transitionTargetDimension = -1;
+                _cooldownUntil = Time.time + switchCooldown;
+                OnSwitchBlocked?.Invoke();
+                yield break; // Cancel transition
+            }
+            
             // Actually change the dimension
             _currentDimension = targetDimension;
             
             OnDimensionChanged?.Invoke(oldDimension, _currentDimension);
             
             _isTransitioning = false;
+            _transitionTargetDimension = -1;
             _cooldownUntil = Time.time + switchCooldown;
             
             OnTransitionComplete?.Invoke(_currentDimension);

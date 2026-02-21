@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using OutOfPhase.Dimension;
 
 namespace OutOfPhase.Progression
@@ -53,11 +54,12 @@ namespace OutOfPhase.Progression
             if (respawnSound != null)
                 SFXPlayer.PlayAtPoint(respawnSound, player.transform.position, respawnVolume);
 
-            // Teleport to last checkpoint
+            // Reload scene while preserving checkpoint
             if (CheckpointManager.Instance != null && CheckpointManager.Instance.HasCheckpoint)
             {
-                CheckpointManager.Instance.LoadCheckpoint();
-                Debug.Log("[RespawnTrigger] Player teleported to last checkpoint.");
+                Debug.Log("[RespawnTrigger] Reloading scene with checkpoint...");
+                CheckpointManager.Instance.PrepareLoadOnSceneReady();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
             else
             {
