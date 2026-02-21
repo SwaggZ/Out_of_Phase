@@ -33,6 +33,22 @@ namespace OutOfPhase.Dimension
 
         public bool IsVisible => _isVisible;
 
+        /// <summary>
+        /// Gets the array of dimension indices this object is visible in.
+        /// </summary>
+        public int[] GetVisibleDimensions()
+        {
+            if (visibleInDimensions == null) return new int[0];
+            
+            var visible = new System.Collections.Generic.List<int>();
+            for (int i = 0; i < visibleInDimensions.Length; i++)
+            {
+                if (visibleInDimensions[i])
+                    visible.Add(i);
+            }
+            return visible.ToArray();
+        }
+
         private void Awake()
         {
             // Cache components

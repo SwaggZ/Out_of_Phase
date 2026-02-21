@@ -307,6 +307,17 @@ namespace OutOfPhase.Dimension
                 yield break; // Cancel transition
             }
             
+            // Check if player would be inside a wall in target dimension
+            if (!IsDestinationSafe(targetDimension))
+            {
+                Debug.Log($"[DimensionManager] Transition to dimension {targetDimension} failed - destination is inside a solid object!");
+                _isTransitioning = false;
+                _transitionTargetDimension = -1;
+                _cooldownUntil = Time.time + switchCooldown;
+                OnSwitchBlocked?.Invoke();
+                yield break; // Cancel transition
+            }
+            
             // Actually change the dimension
             _currentDimension = targetDimension;
             
@@ -317,6 +328,73 @@ namespace OutOfPhase.Dimension
             _cooldownUntil = Time.time + switchCooldown;
             
             OnTransitionComplete?.Invoke(_currentDimension);
+        }
+
+        /// <summary>
+        /// Checks if the player's current position would be safe in the target dimension.
+        /// Returns false if the player would be inside a solid object.
+        /// </summary>
+        private bool IsDestinationSafe(int targetDimension)
+        {
+            // Find player
+            var player = FindFirstObjectByType<UnityEngine.CharacterController>();
+            if (player == null)
+            {
+                // Can't find player, assume safe (fallback)
+                return true;
+            }
+
+            // Check for colliders at player position
+            float checkRadius = 0.5f; // Player capsule radius
+            Collider[] hitColliders = Physics.OverlapSphere(player.transform.position, checkRadius);
+
+            foreach (var collider in hitColliders)
+            {
+                // Skip the player's own collider
+                if (collider.GetComponent<UnityEngine.CharacterController>() != null)
+                    continue;
+
+                // Skip triggers
+                if (collider.isTrigger)
+                    continue;
+
+                // Check if this object is dimension-specific
+                var dimObj = collider.GetComponentInParent<DimensionObject>();
+                if (dimObj != null)
+                {
+                    // Check if this object would be visible in target dimension
+                    if (IsVisibleInCurrentDimension(dimObj.GetVisibleDimensions(), targetDimension))
+                    {
+                        // This solid object exists in target dimension at player position - unsafe!
+                        return false;
+                    }
+                }
+                else
+                {
+                    // Object has no DimensionObject component, so it exists in all dimensions
+                    // This is a solid object at player position - unsafe!
+                    return false;
+                }
+            }
+
+            // No solid objects at player position in target dimension
+            return true;
+        }
+
+        /// <summary>
+        /// Helper to check if an object would be visible in a specific dimension.
+        /// </summary>
+        private bool IsVisibleInCurrentDimension(int[] visibleDimensions, int dimension)
+        {
+            if (visibleDimensions == null || visibleDimensions.Length == 0)
+                return true; // Default to visible
+
+            foreach (int dim in visibleDimensions)
+            {
+                if (dim == dimension)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
