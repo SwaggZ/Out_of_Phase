@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Section5.3
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
   questId: 5.3
-  title: Find a powercell
+  title: Find a powercell (Future)
   description: 
   questType: 2
   targetNPCName: 

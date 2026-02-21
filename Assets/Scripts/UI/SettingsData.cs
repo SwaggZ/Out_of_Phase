@@ -10,27 +10,24 @@ namespace OutOfPhase.UI
     public class SettingsData
     {
         [Header("Display")]
-        [Range(0.5f, 2f)]
-        public float brightness = 1f;
-
         [Range(50f, 120f)]
-        public float fov = 75f;
+        public float fov = 90f;
 
         public bool epilepsyMode = false;
 
         [Header("Controls")]
         [Range(0.1f, 10f)]
-        public float mouseSensitivity = 2f;
+        public float mouseSensitivity = 1f;
 
         [Header("Audio")]
         [Range(0f, 1f)]
-        public float masterVolume = 1f;
+        public float masterVolume = 0.03f;
 
         [Range(0f, 1f)]
-        public float musicVolume = 0.8f;
+        public float musicVolume = 0.24f;
 
         [Range(0f, 1f)]
-        public float ambienceVolume = 0.8f;
+        public float ambienceVolume = 0.42f;
 
         [Range(0f, 1f)]
         public float sfxVolume = 1f;
@@ -42,7 +39,6 @@ namespace OutOfPhase.UI
         {
             return new SettingsData
             {
-                brightness = brightness,
                 fov = fov,
                 epilepsyMode = epilepsyMode,
                 mouseSensitivity = mouseSensitivity,

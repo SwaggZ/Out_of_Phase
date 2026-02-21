@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Section5.2
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
   questId: 5.2
-  title: Dig up 10 pebbles
+  title: Dig up 10 pebbles (Overgrown)
   description: 
   questType: 1
   targetNPCName: 

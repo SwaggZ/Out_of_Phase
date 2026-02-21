@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.InputSystem;
+using OutOfPhase.Player;
 
 namespace OutOfPhase.Progression
 {
@@ -102,7 +102,7 @@ namespace OutOfPhase.Progression
             textRect.sizeDelta = new Vector2(400, 60);
             
             _reloadText = textObj.AddComponent<TextMeshProUGUI>();
-            _reloadText.text = "Hold R to Reload Checkpoint";
+            _reloadText.text = "Hold R to Return to Checkpoint";
             _reloadText.alignment = TextAlignmentOptions.Center;
             _reloadText.fontSize = 20;
             _reloadText.color = circleColor;
@@ -150,7 +150,7 @@ namespace OutOfPhase.Progression
                 
                 // Update text
                 float remainingTime = Mathf.Max(0, reloadDuration - _holdDuration);
-                _reloadText.text = $"Hold R to Reload\n{remainingTime:F1}s";
+                _reloadText.text = $"Hold R to Return\n{remainingTime:F1}s";
                 
                 // Check if reload threshold reached
                 if (_holdDuration >= reloadDuration)
@@ -187,22 +187,53 @@ namespace OutOfPhase.Progression
                 Dialogue.DialogueManager.Instance.EndDialogue();
             }
             
-            // Reload scene while preserving checkpoint
-            if (CheckpointManager.Instance != null && CheckpointManager.Instance.HasCheckpoint)
+            // Teleport to checkpoint directly (no scene reload)
+            if (SectionManager.Instance != null)
             {
-                Debug.Log("[CheckpointReloadHandler] Reloading scene with checkpoint...");
-                CheckpointManager.Instance.PrepareLoadOnSceneReady();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                int sectionIndex = SectionManager.Instance.CurrentSectionIndex;
+                Vector3 checkpointPos = SectionManager.Instance.GetCheckpointPosition(sectionIndex);
+                Quaternion checkpointRot = SectionManager.Instance.GetCheckpointRotation(sectionIndex);
+
+                if (checkpointPos != Vector3.zero)
+                {
+                    TeleportPlayer(checkpointPos, checkpointRot);
+                    Debug.Log("[CheckpointReloadHandler] Teleported to checkpoint.");
+                }
+                else
+                {
+                    Debug.LogWarning("[CheckpointReloadHandler] No checkpoint position found for current section.");
+                }
             }
             else
             {
-                Debug.LogError("[CheckpointReloadHandler] CheckpointManager.Instance is null or no checkpoint saved!");
+                Debug.LogError("[CheckpointReloadHandler] SectionManager.Instance is null!");
             }
             
             // Reset state
             _holdDuration = 0f;
             _canvas.gameObject.SetActive(false);
             _isActive = false;
+        }
+
+        private void TeleportPlayer(Vector3 position, Quaternion rotation)
+        {
+            var player = FindFirstObjectByType<PlayerMovement>();
+            if (player == null) return;
+
+            // Disable CharacterController to allow position change
+            var cc = player.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+
+            player.transform.position = position;
+            player.transform.rotation = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
+
+            if (cc != null) cc.enabled = true;
+
+            // Snap camera look direction
+            var look = player.GetComponent<PlayerLook>()
+                ?? player.GetComponentInChildren<PlayerLook>();
+            if (look != null)
+                look.SnapToRotation(rotation.eulerAngles.y, rotation.eulerAngles.x);
         }
 
         private void OnGUI()

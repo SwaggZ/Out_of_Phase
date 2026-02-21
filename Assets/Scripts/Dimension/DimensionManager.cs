@@ -277,8 +277,46 @@ namespace OutOfPhase.Dimension
             }
 
             Debug.Log($"[DimensionManager] AbsoluteForce switching from {_currentDimension} to {targetDimension}");
-            StartCoroutine(TransitionToDimension(targetDimension));
+            StartCoroutine(TransitionToDimensionAbsolute(targetDimension));
             return true;
+        }
+
+        /// <summary>
+        /// Transition that bypasses ALL lock checks - used by AbsoluteForceSwitchToDimension.
+        /// </summary>
+        private System.Collections.IEnumerator TransitionToDimensionAbsolute(int targetDimension)
+        {
+            int oldDimension = _currentDimension;
+            _isTransitioning = true;
+            _transitionTargetDimension = targetDimension;
+            
+            OnTransitionStart?.Invoke(targetDimension);
+            
+            // Wait for transition duration (visual effects can hook into this)
+            if (transitionDuration > 0)
+            {
+                yield return new WaitForSeconds(transitionDuration);
+            }
+            
+            // Absolute force does NOT check locks - it guarantees the switch happens
+            // Only check destination safety to prevent getting stuck in walls
+            if (!IsDestinationSafe(targetDimension))
+            {
+                Debug.LogWarning($"[DimensionManager] AbsoluteForce to dimension {targetDimension} - destination unsafe but forcing anyway!");
+                // Still proceed - teleporters should position the player correctly
+            }
+            
+            // Actually change the dimension
+            _currentDimension = targetDimension;
+            
+            OnDimensionChanged?.Invoke(oldDimension, _currentDimension);
+            
+            _isTransitioning = false;
+            _transitionTargetDimension = -1;
+            _cooldownUntil = Time.time + switchCooldown;
+            
+            OnTransitionComplete?.Invoke(_currentDimension);
+            Debug.Log($"[DimensionManager] AbsoluteForce transition complete: now in dimension {_currentDimension}");
         }
 
         private System.Collections.IEnumerator TransitionToDimension(int targetDimension)

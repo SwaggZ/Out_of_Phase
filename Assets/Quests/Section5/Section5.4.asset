@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Section5.4
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
   questId: 5.4
-  title: Find a powercell Socket
+  title: Find a powercell Socket (Overgrown)
   description: 
   questType: 2
   targetNPCName: 

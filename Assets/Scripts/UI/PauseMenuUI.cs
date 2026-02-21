@@ -25,7 +25,9 @@ namespace OutOfPhase.UI
         private GameObject _root;
         private GameObject _mainPanel;
         private GameObject _settingsPanel;
+        private GameObject _controlsPanel;
         private SettingsUI _settingsUI;
+        private ControlsUI _controlsUI;
 
         private bool _isPaused;
         private Player.PlayerInputActions _inputActions;
@@ -82,6 +84,7 @@ namespace OutOfPhase.UI
             _root.SetActive(true);
             _mainPanel.SetActive(true);
             _settingsPanel.SetActive(false);
+            _controlsPanel.SetActive(false);
         }
 
         private void Resume()
@@ -149,13 +152,13 @@ namespace OutOfPhase.UI
             GameObject btnContainer = new GameObject("Buttons");
             btnContainer.transform.SetParent(_mainPanel.transform, false);
             RectTransform btnRect = btnContainer.AddComponent<RectTransform>();
-            btnRect.anchorMin = new Vector2(0.5f, 0.3f);
-            btnRect.anchorMax = new Vector2(0.5f, 0.6f);
+            btnRect.anchorMin = new Vector2(0.5f, 0.2f);
+            btnRect.anchorMax = new Vector2(0.5f, 0.65f);
             btnRect.sizeDelta = new Vector2(300, 500);
             btnRect.anchoredPosition = Vector2.zero;
 
             var layout = btnContainer.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = 80;
+            layout.spacing = 20;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
@@ -167,6 +170,11 @@ namespace OutOfPhase.UI
             {
                 _mainPanel.SetActive(false);
                 _settingsPanel.SetActive(true);
+            });
+            CreateButton(btnContainer.transform, "CONTROLS", () =>
+            {
+                _mainPanel.SetActive(false);
+                _controlsPanel.SetActive(true);
             });
             CreateButton(btnContainer.transform, "MAIN MENU", () =>
             {
@@ -194,6 +202,19 @@ namespace OutOfPhase.UI
                 _mainPanel.SetActive(true);
             });
             _settingsPanel.SetActive(false);
+
+            // --- Controls Panel ---
+            _controlsPanel = new GameObject("ControlsPanel");
+            _controlsPanel.transform.SetParent(canvasObj.transform, false);
+            SetFullScreen(_controlsPanel.AddComponent<RectTransform>());
+
+            _controlsUI = _controlsPanel.AddComponent<ControlsUI>();
+            _controlsUI.Initialize(accentColor, buttonColor, buttonHoverColor, textColor, bgColor, () =>
+            {
+                _controlsPanel.SetActive(false);
+                _mainPanel.SetActive(true);
+            });
+            _controlsPanel.SetActive(false);
         }
 
         private void CreateButton(Transform parent, string label, UnityEngine.Events.UnityAction onClick)

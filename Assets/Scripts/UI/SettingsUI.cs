@@ -19,7 +19,6 @@ namespace OutOfPhase.UI
         private Action _onBack;
 
         // Slider refs for live preview
-        private Slider _brightnessSlider;
         private Slider _fovSlider;
         private Slider _sensitivitySlider;
         private Slider _masterVolumeSlider;
@@ -29,7 +28,6 @@ namespace OutOfPhase.UI
         private Toggle _epilepsyToggle;
 
         // Value labels
-        private TextMeshProUGUI _brightnessValue;
         private TextMeshProUGUI _fovValue;
         private TextMeshProUGUI _sensitivityValue;
         private TextMeshProUGUI _masterValue;
@@ -124,9 +122,6 @@ namespace OutOfPhase.UI
             // --- DISPLAY ---
             CreateSectionHeader(content.transform, "DISPLAY");
 
-            (_brightnessSlider, _brightnessValue) = CreateSliderRow(content.transform, "Brightness", 0.5f, 2f, true,
-                v => { _workingCopy.brightness = v; ApplyLive(); });
-
             (_fovSlider, _fovValue) = CreateSliderRow(content.transform, "Field of View", 50f, 120f, true,
                 v => { _workingCopy.fov = v; ApplyLive(); });
 
@@ -192,11 +187,6 @@ namespace OutOfPhase.UI
 
         private void RefreshUI()
         {
-            if (_brightnessSlider != null)
-            {
-                _brightnessSlider.SetValueWithoutNotify(_workingCopy.brightness);
-                _brightnessValue.text = _workingCopy.brightness.ToString("F1");
-            }
             if (_fovSlider != null)
             {
                 _fovSlider.SetValueWithoutNotify(_workingCopy.fov);

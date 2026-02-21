@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 namespace OutOfPhase.UI
 {
@@ -15,10 +13,6 @@ namespace OutOfPhase.UI
 
         private const string PREFS_KEY = "OutOfPhase_Settings";
 
-        [Header("References (auto-found if null)")]
-        [Tooltip("URP Volume for brightness control")]
-        [SerializeField] private Volume postProcessVolume;
-
         /// <summary>Current live settings.</summary>
         public SettingsData Current { get; private set; }
 
@@ -27,8 +21,6 @@ namespace OutOfPhase.UI
 
         /// <summary>Check this from any effect script to skip flashing/glitch.</summary>
         public static bool EpilepsyMode => Instance != null && Instance.Current.epilepsyMode;
-
-        private ColorAdjustments _colorAdjustments;
 
         private void Awake()
         {
@@ -42,7 +34,6 @@ namespace OutOfPhase.UI
             DontDestroyOnLoad(gameObject);
 
             Current = Load();
-            FindVolume();
             ApplyAll();
         }
 
@@ -62,22 +53,12 @@ namespace OutOfPhase.UI
         /// </summary>
         public void ApplyAll()
         {
-            ApplyBrightness();
             ApplyFOV();
             ApplySensitivity();
             ApplyAudio();
         }
 
         #region Individual Apply
-
-        private void ApplyBrightness()
-        {
-            if (_colorAdjustments == null) return;
-
-            // Map brightness 0.5–2.0 → post-exposure -2 to +2
-            float exposure = Mathf.Lerp(-2f, 2f, Mathf.InverseLerp(0.5f, 2f, Current.brightness));
-            _colorAdjustments.postExposure.Override(exposure);
-        }
 
         private void ApplyFOV()
         {
@@ -115,27 +96,6 @@ namespace OutOfPhase.UI
             if (sfxPlayer != null)
             {
                 sfxPlayer.SetSFXVolume(Current.sfxVolume);
-            }
-        }
-
-        #endregion
-
-        #region Volume Discovery
-
-        private void FindVolume()
-        {
-            if (postProcessVolume == null)
-            {
-                postProcessVolume = FindFirstObjectByType<Volume>();
-            }
-
-            if (postProcessVolume != null && postProcessVolume.profile != null)
-            {
-                if (!postProcessVolume.profile.TryGet(out _colorAdjustments))
-                {
-                    _colorAdjustments = postProcessVolume.profile.Add<ColorAdjustments>(true);
-                }
-                _colorAdjustments.postExposure.overrideState = true;
             }
         }
 

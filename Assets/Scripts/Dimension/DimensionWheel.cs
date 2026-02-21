@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
 using OutOfPhase.Player;
+using OutOfPhase.Dialogue;
 
 namespace OutOfPhase.Dimension
 {
@@ -173,6 +174,13 @@ namespace OutOfPhase.Dimension
         private void OpenWheel()
         {
             Debug.Log("[DimensionWheel] OpenWheel called");
+            
+            // Don't allow opening during dialogue
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+            {
+                Debug.Log("[DimensionWheel] Cannot open during dialogue");
+                return;
+            }
             
             var dimensionManager = GetDimensionManager();
             if (dimensionManager == null) 

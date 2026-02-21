@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Section5.1
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
   questId: 5.1
-  title: Find a way to dig up pebbles
+  title: Find a way to dig up pebbles (Ruined)
   description: 
   questType: 1
   targetNPCName: 

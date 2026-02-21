@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Section5.5
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Quest.QuestDefinition
   questId: 5.5
-  title: Find Boulder and help him
+  title: Find Boulder and help him (Overgrown)
   description: 
   questType: 2
   targetNPCName: 

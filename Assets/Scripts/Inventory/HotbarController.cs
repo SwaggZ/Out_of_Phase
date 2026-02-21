@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using OutOfPhase.Items;
 using OutOfPhase.Player;
 using OutOfPhase.Dimension;
+using OutOfPhase.Dialogue;
 
 namespace OutOfPhase.Inventory
 {
@@ -114,6 +115,9 @@ namespace OutOfPhase.Inventory
 
         private void OnScrollInput(InputAction.CallbackContext context)
         {
+            // Don't allow cycling during dialogue
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) return;
+
             float scrollValue = context.ReadValue<float>();
             if (Mathf.Abs(scrollValue) < 0.1f) return;
 
@@ -134,6 +138,9 @@ namespace OutOfPhase.Inventory
         /// </summary>
         public void SelectSlot(int slotIndex)
         {
+            // Don't allow slot selection during dialogue
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) return;
+
             if (inventory == null) return;
             if (slotIndex < 0 || slotIndex >= inventory.SlotCount) return;
             if (slotIndex == _selectedSlot) return;

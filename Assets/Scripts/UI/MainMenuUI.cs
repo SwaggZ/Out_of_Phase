@@ -37,7 +37,9 @@ namespace OutOfPhase.UI
         private Canvas _canvas;
         private GameObject _mainPanel;
         private GameObject _settingsPanel;
+        private GameObject _controlsPanel;
         private SettingsUI _settingsUI;
+        private ControlsUI _controlsUI;
 
         private void Start()
         {
@@ -108,13 +110,13 @@ namespace OutOfPhase.UI
             GameObject buttonContainer = new GameObject("Buttons");
             buttonContainer.transform.SetParent(_mainPanel.transform, false);
             RectTransform btnContRect = buttonContainer.AddComponent<RectTransform>();
-            btnContRect.anchorMin = new Vector2(0.5f, 0.35f);
-            btnContRect.anchorMax = new Vector2(0.5f, 0.55f);
+            btnContRect.anchorMin = new Vector2(0.5f, 0.25f);
+            btnContRect.anchorMax = new Vector2(0.5f, 0.6f);
             btnContRect.sizeDelta = new Vector2(320, 400);
             btnContRect.anchoredPosition = Vector2.zero;
 
             var layout = buttonContainer.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = 80;
+            layout.spacing = 20;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
@@ -129,6 +131,7 @@ namespace OutOfPhase.UI
             }
             CreateMenuButton(buttonContainer.transform, "NEW GAME", OnNewGame);
             CreateMenuButton(buttonContainer.transform, "SETTINGS", OnSettings);
+            CreateMenuButton(buttonContainer.transform, "CONTROLS", OnControls);
             CreateMenuButton(buttonContainer.transform, "QUIT", OnQuit);
 
             // --- Settings Panel (hidden) ---
@@ -139,6 +142,15 @@ namespace OutOfPhase.UI
             _settingsUI = _settingsPanel.AddComponent<SettingsUI>();
             _settingsUI.Initialize(accentColor, buttonColor, buttonHoverColor, textColor, bgColor, OnSettingsBack);
             _settingsPanel.SetActive(false);
+
+            // --- Controls Panel (hidden) ---
+            _controlsPanel = new GameObject("ControlsPanel");
+            _controlsPanel.transform.SetParent(canvasObj.transform, false);
+            SetFullScreen(_controlsPanel.AddComponent<RectTransform>());
+
+            _controlsUI = _controlsPanel.AddComponent<ControlsUI>();
+            _controlsUI.Initialize(accentColor, buttonColor, buttonHoverColor, textColor, bgColor, OnControlsBack);
+            _controlsPanel.SetActive(false);
 
             // Version text
             CreateVersionText(canvasObj.transform);
@@ -305,6 +317,18 @@ namespace OutOfPhase.UI
         private void OnSettingsBack()
         {
             _settingsPanel.SetActive(false);
+            _mainPanel.SetActive(true);
+        }
+
+        private void OnControls()
+        {
+            _mainPanel.SetActive(false);
+            _controlsPanel.SetActive(true);
+        }
+
+        private void OnControlsBack()
+        {
+            _controlsPanel.SetActive(false);
             _mainPanel.SetActive(true);
         }
 
