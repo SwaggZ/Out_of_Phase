@@ -45,6 +45,10 @@ namespace OutOfPhase.Dimension
         [Tooltip("Cooldown after a dimension switch before another is allowed")]
         [SerializeField] private float switchCooldown = 0.5f;
 
+        [Header("Collision Detection")]
+        [Tooltip("Layer mask for objects that can block dimension switches. Exclude decoration/vegetation layers.")]
+        [SerializeField] private LayerMask blockingLayerMask = ~0; // Default: all layers
+
         // Current state
         private int _currentDimension;
         private int _transitionTargetDimension = -1; // Track target during transition
@@ -382,9 +386,9 @@ namespace OutOfPhase.Dimension
                 return true;
             }
 
-            // Check for colliders at player position
+            // Check for colliders at player position, using layer mask to filter
             float checkRadius = 0.5f; // Player capsule radius
-            Collider[] hitColliders = Physics.OverlapSphere(player.transform.position, checkRadius);
+            Collider[] hitColliders = Physics.OverlapSphere(player.transform.position, checkRadius, blockingLayerMask, QueryTriggerInteraction.Ignore);
 
             foreach (var collider in hitColliders)
             {
@@ -392,7 +396,7 @@ namespace OutOfPhase.Dimension
                 if (collider.GetComponent<UnityEngine.CharacterController>() != null)
                     continue;
 
-                // Skip triggers
+                // Double-check: skip triggers (QueryTriggerInteraction.Ignore should handle this, but be safe)
                 if (collider.isTrigger)
                     continue;
 
@@ -404,6 +408,7 @@ namespace OutOfPhase.Dimension
                     if (IsVisibleInCurrentDimension(dimObj.GetVisibleDimensions(), targetDimension))
                     {
                         // This solid object exists in target dimension at player position - unsafe!
+                        Debug.Log($"[DimensionManager] Blocked by DimensionObject: {collider.gameObject.name} (layer: {LayerMask.LayerToName(collider.gameObject.layer)})");
                         return false;
                     }
                 }
@@ -411,6 +416,7 @@ namespace OutOfPhase.Dimension
                 {
                     // Object has no DimensionObject component, so it exists in all dimensions
                     // This is a solid object at player position - unsafe!
+                    Debug.Log($"[DimensionManager] Blocked by non-dimension object: {collider.gameObject.name} (layer: {LayerMask.LayerToName(collider.gameObject.layer)})");
                     return false;
                 }
             }

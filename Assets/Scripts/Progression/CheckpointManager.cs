@@ -222,6 +222,14 @@ namespace OutOfPhase.Progression
                     Debug.Log($"[Checkpoint] Reapplying DimensionHideVolume: {hideVolume.gameObject.name}");
                     hideVolume.ReapplyHidesIfPlayerInside();
                 }
+
+                // Check for DimensionSoftLockVolume
+                var softLockVolume = col.GetComponent<Dimension.DimensionSoftLockVolume>();
+                if (softLockVolume != null)
+                {
+                    Debug.Log($"[Checkpoint] Reapplying DimensionSoftLockVolume: {softLockVolume.gameObject.name}");
+                    softLockVolume.ReapplyLocksIfPlayerInside();
+                }
             }
         }
     }

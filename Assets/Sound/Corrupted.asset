@@ -15,7 +15,7 @@ MonoBehaviour:
   musicLoop: {fileID: 8300000, guid: b27301b56596e40498badba7e5d5f130, type: 3}
   musicVolume: 1
   ambienceLoop: {fileID: 8300000, guid: 4d963cb2a6181fe45aa778009dbc935e, type: 3}
-  ambienceVolume: 1
+  ambienceVolume: 0.6
   transitionStinger: {fileID: 8300000, guid: 08224b84ba65ed645bcf522384a42f70, type: 3}
   stingerVolume: 0.7
   mixerSnapshot: {fileID: 0}

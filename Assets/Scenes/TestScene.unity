@@ -14744,6 +14744,7 @@ GameObject:
   - component: {fileID: 145420519}
   - component: {fileID: 145420518}
   - component: {fileID: 145420517}
+  - component: {fileID: 145420523}
   m_Layer: 0
   m_Name: AbstractHide (7)
   m_TagString: Untagged
@@ -14763,10 +14764,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9483115fd1bf634a8438759cbebf01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionLockVolume
-  lockSwitching: 1
-  forceDimension: 1
+  lockSwitching: 0
+  forceDimension: 0
   targetDimension: 2
-  lockedDimensions: 0101000101
+  lockedDimensions: 0000000101
   gizmoColor: {r: 1, g: 0, b: 0.5, a: 0.3}
 --- !u!114 &145420518
 MonoBehaviour:
@@ -14780,8 +14781,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100ed2f95548a0b47aea6f95e7041ff5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionHideVolume
-  hiddenDimensions: 0101000101
-  lockSwitching: 1
+  hiddenDimensions: 0000000101
+  lockSwitching: 0
   fallbackDimension: -1
   gizmoColor: {r: 0, g: 1, b: 0.5551176, a: 0.023529412}
 --- !u!65 &145420519
@@ -14877,6 +14878,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &145420523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145420516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a9cb5cc7dfb164ea5346ace71baec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionSoftLockVolume
+  lockedDimensions: 0101010101
+  lockSwitching: 0
+  gizmoColor: {r: 1, g: 0.5, b: 0, a: 0.3}
 --- !u!1 &145861406
 GameObject:
   m_ObjectHideFlags: 0
@@ -17866,6 +17882,7 @@ GameObject:
   - component: {fileID: 176577735}
   - component: {fileID: 176577734}
   - component: {fileID: 176577733}
+  - component: {fileID: 176577736}
   m_Layer: 0
   m_Name: BlockFuture
   m_TagString: Untagged
@@ -17895,12 +17912,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 176577731}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 100ed2f95548a0b47aea6f95e7041ff5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionHideVolume
-  hiddenDimensions: 0001010101
+  hiddenDimensions: 0000010101
   lockSwitching: 0
   fallbackDimension: -1
   gizmoColor: {r: 0, g: 1, b: 0.5551176, a: 0.023529412}
@@ -17911,7 +17928,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 176577731}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9483115fd1bf634a8438759cbebf01d, type: 3}
   m_Name: 
@@ -17942,6 +17959,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3, y: 1, z: 2.58}
   m_Center: {x: 0, y: 0, z: -0.19}
+--- !u!114 &176577736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176577731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a9cb5cc7dfb164ea5346ace71baec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionSoftLockVolume
+  lockedDimensions: 0100010101
+  lockSwitching: 0
+  gizmoColor: {r: 1, g: 0.5, b: 0, a: 0.3}
 --- !u!1001 &176645852
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23584,8 +23616,8 @@ Transform:
   m_GameObject: {fileID: 228154421}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.0000004768371, z: -0, w: 1}
-  m_LocalPosition: {x: 85.1, y: 38.1601, z: 74.4}
-  m_LocalScale: {x: 228.23964, y: 78.762436, z: 20.761263}
+  m_LocalPosition: {x: 85.1, y: 38.1601, z: 75.227}
+  m_LocalScale: {x: 228.23964, y: 78.762436, z: 19.10659}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -56404,7 +56436,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &530114844
 Transform:
   m_ObjectHideFlags: 0
@@ -57479,8 +57511,8 @@ Transform:
   m_GameObject: {fileID: 536240605}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -137.4944, y: 4.113, z: 80.8736}
-  m_LocalScale: {x: 9.6632, y: 8.146, z: 5.168356}
+  m_LocalPosition: {x: -139.4758, y: 4.113, z: 81.9609}
+  m_LocalScale: {x: 17.657227, y: 8.146, z: 9.130935}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -94428,6 +94460,9 @@ MonoBehaviour:
   - {r: 0.3230719, g: 0, b: 0.4528302, a: 1}
   transitionDuration: 0.1
   switchCooldown: 2
+  blockingLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!4 &860166877 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8383238049460867179, guid: 9ebe757476dabd34b8e3aba304e7be6a, type: 3}
@@ -103092,6 +103127,7 @@ GameObject:
   - component: {fileID: 940904704}
   - component: {fileID: 940904703}
   - component: {fileID: 940904702}
+  - component: {fileID: 940904708}
   m_Layer: 0
   m_Name: AbstractHide (9)
   m_TagString: Untagged
@@ -103106,7 +103142,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 940904701}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9483115fd1bf634a8438759cbebf01d, type: 3}
   m_Name: 
@@ -103123,7 +103159,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 940904701}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 100ed2f95548a0b47aea6f95e7041ff5, type: 3}
   m_Name: 
@@ -103225,6 +103261,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &940904708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 940904701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a9cb5cc7dfb164ea5346ace71baec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionSoftLockVolume
+  lockedDimensions: 0000010101
+  lockSwitching: 0
+  gizmoColor: {r: 1, g: 0.5, b: 0, a: 0.3}
 --- !u!1001 &943594957
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -165102,7 +165153,9 @@ GameObject:
   - component: {fileID: 1498955848}
   - component: {fileID: 1498955847}
   - component: {fileID: 1498955846}
-  - component: {fileID: 1498955845}
+  - component: {fileID: 1498955852}
+  - component: {fileID: 1498955851}
+  - component: {fileID: 1498955850}
   m_Layer: 0
   m_Name: FutureLock (1)
   m_TagString: Untagged
@@ -165110,23 +165163,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1498955845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1498955844}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9483115fd1bf634a8438759cbebf01d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionLockVolume
-  lockSwitching: 0
-  forceDimension: 0
-  targetDimension: 0
-  lockedDimensions: 0001010101
-  gizmoColor: {r: 1, g: 0, b: 0.5, a: 0.3}
 --- !u!65 &1498955846
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -165220,6 +165256,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1498955850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498955844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a9cb5cc7dfb164ea5346ace71baec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionSoftLockVolume
+  lockedDimensions: 0100010101
+  lockSwitching: 0
+  gizmoColor: {r: 1, g: 0.5, b: 0, a: 0.3}
+--- !u!114 &1498955851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498955844}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 100ed2f95548a0b47aea6f95e7041ff5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionHideVolume
+  hiddenDimensions: 0000010101
+  lockSwitching: 0
+  fallbackDimension: -1
+  gizmoColor: {r: 0, g: 1, b: 0.5551176, a: 0.023529412}
+--- !u!114 &1498955852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498955844}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9483115fd1bf634a8438759cbebf01d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionLockVolume
+  lockSwitching: 0
+  forceDimension: 0
+  targetDimension: 2
+  lockedDimensions: 0000010101
+  gizmoColor: {r: 1, g: 0, b: 0.5, a: 0.3}
 --- !u!1 &1500074366
 GameObject:
   m_ObjectHideFlags: 0
@@ -211980,6 +212064,7 @@ GameObject:
   - component: {fileID: 1940900678}
   - component: {fileID: 1940900677}
   - component: {fileID: 1940900676}
+  - component: {fileID: 1940900682}
   m_Layer: 0
   m_Name: AbstractHide (5)
   m_TagString: Untagged
@@ -211999,10 +212084,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9483115fd1bf634a8438759cbebf01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionLockVolume
-  lockSwitching: 1
-  forceDimension: 1
+  lockSwitching: 0
+  forceDimension: 0
   targetDimension: 1
-  lockedDimensions: 0100010101
+  lockedDimensions: 0000010101
   gizmoColor: {r: 1, g: 0, b: 0.5, a: 0.3}
 --- !u!114 &1940900677
 MonoBehaviour:
@@ -212016,8 +212101,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100ed2f95548a0b47aea6f95e7041ff5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionHideVolume
-  hiddenDimensions: 0100010101
-  lockSwitching: 1
+  hiddenDimensions: 0000010101
+  lockSwitching: 0
   fallbackDimension: -1
   gizmoColor: {r: 0, g: 1, b: 0.5551176, a: 0.023529412}
 --- !u!65 &1940900678
@@ -212113,6 +212198,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &1940900682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1940900675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a9cb5cc7dfb164ea5346ace71baec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionSoftLockVolume
+  lockedDimensions: 0101010101
+  lockSwitching: 0
+  gizmoColor: {r: 1, g: 0.5, b: 0, a: 0.3}
 --- !u!1001 &1941805758
 PrefabInstance:
   m_ObjectHideFlags: 0
