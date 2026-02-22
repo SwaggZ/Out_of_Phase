@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf5fcdb509423674ba81721d8c232aaa, type: 3}
   m_Name: Abstract
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionAudioProfile
-  musicLoop: {fileID: 8300000, guid: 3b9277a8adac1144d92e540cbe043744, type: 3}
+  musicLoop: {fileID: 8300000, guid: 228ea78b26288dc40a6e33e6d6021958, type: 3}
   musicVolume: 1
-  ambienceLoop: {fileID: 8300000, guid: 72d7f1aeef044a140888316ed86e23a2, type: 3}
+  ambienceLoop: {fileID: 8300000, guid: 793f76920f980384c93a9b9189a257ba, type: 3}
   ambienceVolume: 1
   transitionStinger: {fileID: 8300000, guid: 10974e597fd18884b8802850c1f86145, type: 3}
   stingerVolume: 0.7

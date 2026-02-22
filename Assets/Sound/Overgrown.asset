@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf5fcdb509423674ba81721d8c232aaa, type: 3}
   m_Name: Overgrown
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionAudioProfile
-  musicLoop: {fileID: 8300000, guid: 5ebf4c9e03badf84b85e3a5e155516cd, type: 3}
+  musicLoop: {fileID: 8300000, guid: 459ede66aa0f7714bba66a254c4301c5, type: 3}
   musicVolume: 1
-  ambienceLoop: {fileID: 8300000, guid: be27aeaa056158947aeb6c3b25906bee, type: 3}
+  ambienceLoop: {fileID: 8300000, guid: 4b2ebf0f881c231438d43bee701ca2bf, type: 3}
   ambienceVolume: 1
   transitionStinger: {fileID: 8300000, guid: 62b24dcf0a24e3d45a329da069103d88, type: 3}
   stingerVolume: 0.7

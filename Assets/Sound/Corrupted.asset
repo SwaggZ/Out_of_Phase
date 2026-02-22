@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf5fcdb509423674ba81721d8c232aaa, type: 3}
   m_Name: Corrupted
   m_EditorClassIdentifier: OutOfPhase::OutOfPhase.Dimension.DimensionAudioProfile
-  musicLoop: {fileID: 8300000, guid: b27301b56596e40498badba7e5d5f130, type: 3}
+  musicLoop: {fileID: 8300000, guid: d80b293f840286242a10286764cc20eb, type: 3}
   musicVolume: 1
-  ambienceLoop: {fileID: 8300000, guid: 4d963cb2a6181fe45aa778009dbc935e, type: 3}
+  ambienceLoop: {fileID: 8300000, guid: 6a538fc0e3d31024a87b916031c7e16f, type: 3}
   ambienceVolume: 0.6
   transitionStinger: {fileID: 8300000, guid: 08224b84ba65ed645bcf522384a42f70, type: 3}
   stingerVolume: 0.7

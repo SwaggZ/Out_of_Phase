@@ -1,7 +1,14 @@
 fileFormatVersion: 2
 guid: 273aafbd147aec044a0f20c7242a83ca
+AssetOrigin:
+  serializedVersion: 1
+  productId: 40538
+  packageName: Lowpoly Piece of Nature
+  packageVersion: 1.1
+  assetPath: Assets/A_piece_of_nature/Models/Ground.FBX
+  uploadId: 698042
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable:
   - first:
       1: 100000
@@ -31,8 +38,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -47,11 +52,11 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1
-    meshCompression: 0
+    meshCompression: 3
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
@@ -73,6 +78,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 1
     secondaryUVAngleDistortion: 8
@@ -122,10 +130,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 40538
-  packageName: Lowpoly Piece of Nature
-  packageVersion: 1.1
-  assetPath: Assets/A_piece_of_nature/Models/Ground.FBX
-  uploadId: 698042

@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 64ef6090154c08b4ca6f432a8ec79c67
+AssetOrigin:
+  serializedVersion: 1
+  productId: 334794
+  packageName: Low-Poly Forest Survival Starter Pack Lite
+  packageVersion: 1.1
+  assetPath: Assets/Devtricked/Low-Poly Forest Survival Starter Pack lite/Meshes/StorageChest.fbx
+  uploadId: 808726
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -34,7 +41,7 @@ ModelImporter:
   meshes:
     lODScreenPercentages: []
     globalScale: 1
-    meshCompression: 0
+    meshCompression: 3
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
@@ -108,10 +115,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 334794
-  packageName: Low-Poly Forest Survival Starter Pack Lite
-  packageVersion: 1.1
-  assetPath: Assets/Devtricked/Low-Poly Forest Survival Starter Pack lite/Meshes/StorageChest.fbx
-  uploadId: 808726
